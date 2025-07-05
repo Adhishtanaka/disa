@@ -4,6 +4,7 @@ import type {ChangeEvent, FormEvent} from 'react';
 import { userLoginSchema } from '../../schema/user';
 import { authService } from '../../services/auth';
 import { useNavigate } from 'react-router';
+import Alert from '../../components/common/Alert';
 
 type LoginFormData = z.infer<typeof userLoginSchema>;
 
@@ -17,6 +18,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [alert, setAlert] = useState<{ type: 'error' | 'success' | 'warning' | 'info'; message: string } | null>(null);
 
   // Real-time form validation
   useEffect(() => {
@@ -45,6 +47,12 @@ const SignIn = () => {
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear alert when user starts typing
+    if (alert) setAlert(null);
+    // Clear specific field error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleGetLocation = () => {
@@ -93,14 +101,23 @@ const SignIn = () => {
       const validatedData = userLoginSchema.parse(formDataWithLocation);
       const token = await authService.login(validatedData);
       if (token != null) {
-        const role = authService.getUserRole();
-        if (role === 'user') navigate('/user');
-        else if (role === 'volunteer') navigate('/volunteer');
-        else if (role === 'first_responder') navigate('/first_responder');
-        else if (role === 'government') navigate('/government');
-        else navigate('/public');
+        setAlert({
+          type: 'success',
+          message: 'Login successful! Redirecting to your dashboard...'
+        });
+        
+        // Small delay to show success message before redirect
+        setTimeout(() => {
+          const role = authService.getUserRole();
+          if (role === 'user') navigate('/user');
+          else if (role === 'volunteer') navigate('/volunteer');
+          else if (role === 'first_responder') navigate('/first_responder');
+          else if (role === 'government') navigate('/government');
+          else navigate('/public');
+        }, 1500);
       }
     } catch (error) {
+      console.error('Login error:', error);
       if (error instanceof z.ZodError) {
         const errorMap: Record<string, string> = {};
         error.errors.forEach(err => {
@@ -109,6 +126,20 @@ const SignIn = () => {
           }
         });
         setErrors(errorMap);
+        setAlert({
+          type: 'error',
+          message: 'Please check the form fields and try again.'
+        });
+      } else if (error instanceof Error) {
+        setAlert({
+          type: 'error',
+          message: error.message || 'Login failed. Please check your credentials and try again.'
+        });
+      } else {
+        setAlert({
+          type: 'error',
+          message: 'An unexpected error occurred. Please try again.'
+        });
       }
     } finally {
       setIsLoading(false);
@@ -116,7 +147,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-300">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-grid-pattern animate-pulse"></div>
@@ -179,6 +210,17 @@ const SignIn = () => {
 
         {/* Enhanced Form Container */}
         <div className="bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl hover:bg-gray-800/40 transition-all duration-300 hover:border-gray-600/50 hover:shadow-blue-500/10">
+          {/* Alert Component */}
+          {alert && (
+            <div className="mb-6">
+              <Alert
+                type={alert.type}
+                message={alert.message}
+                onClose={() => setAlert(null)}
+              />
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-5">
               {/* Enhanced Email Field */}

@@ -323,7 +323,7 @@ export const DisasterDetailsFr: React.FC = () => {
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white rounded-xl shadow-xl">
+                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
                         <div className="relative">
                             <button
                                 onClick={() => setIsImageModalOpen(false)}

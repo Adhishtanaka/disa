@@ -42,10 +42,10 @@ const EmergencyTypes = {
 };
 
 const UrgencyLevels = {
-    high: { text: 'Critical', color: 'text-red-600 bg-red-50' },
-    medium: { text: 'High', color: 'text-orange-600 bg-orange-50' },
-    low: { text: 'Moderate', color: 'text-green-600 bg-green-50' },
-    default: { text: 'Unknown', color: 'text-gray-600 bg-gray-50' }
+    high: { text: 'Critical', color: 'text-red-600 bg-red-50 dark:bg-red-900/20 dark:text-red-400' },
+    medium: { text: 'High', color: 'text-orange-600 bg-orange-50 dark:bg-orange-900/20 dark:text-orange-400' },
+    low: { text: 'Moderate', color: 'text-green-600 bg-green-50 dark:bg-green-900/20 dark:text-green-400' },
+    default: { text: 'Unknown', color: 'text-gray-600 bg-gray-50 dark:bg-gray-800 dark:text-gray-400' }
 };
 
 const StatusTypes = {
@@ -141,21 +141,21 @@ export const DisasterDetailsUserPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-            {/* Animated Background Elements */}
-            <div className="absolute inset-0 opacity-5">
+        <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden transition-colors duration-300">
+            {/* Animated Background Elements - only visible in dark mode */}
+            <div className="absolute inset-0 opacity-5 dark:block hidden">
                 <div className="absolute inset-0 bg-grid-pattern animate-pulse"></div>
             </div>
             
-            {/* Floating Gradient Orbs with Animation */}
-            <div className="absolute top-0 left-0 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-float"></div>
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-float-reverse"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse"></div>
+            {/* Floating Gradient Orbs with Animation - only visible in dark mode */}
+            <div className="absolute top-0 left-0 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-float dark:block hidden"></div>
+            <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-float-reverse dark:block hidden"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-green-500/10 rounded-full blur-3xl animate-pulse dark:block hidden"></div>
             
-            {/* Floating Elements */}
-            <div className="absolute top-20 right-20 w-4 h-4 bg-blue-400/30 rounded-full animate-bounce"></div>
-            <div className="absolute bottom-20 left-20 w-3 h-3 bg-purple-400/30 rounded-full animate-bounce delay-1000"></div>
-            <div className="absolute top-1/3 left-10 w-2 h-2 bg-green-400/30 rounded-full animate-ping"></div>
+            {/* Floating Elements - only visible in dark mode */}
+            <div className="absolute top-20 right-20 w-4 h-4 bg-blue-400/30 rounded-full animate-bounce dark:block hidden"></div>
+            <div className="absolute bottom-20 left-20 w-3 h-3 bg-purple-400/30 rounded-full animate-bounce delay-1000 dark:block hidden"></div>
+            <div className="absolute top-1/3 left-10 w-2 h-2 bg-green-400/30 rounded-full animate-ping dark:block hidden"></div>
 
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Main Layout Grid */}
@@ -163,12 +163,12 @@ export const DisasterDetailsUserPage: React.FC = () => {
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Emergency Header Card */}
-                        <div className="bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl hover:bg-gray-800/40 transition-all duration-300 hover:border-gray-600/50 hover:shadow-blue-500/10">
+                        <div className="bg-white dark:bg-gray-800/30 backdrop-blur-xl border border-gray-200 dark:border-gray-700/50 rounded-2xl p-8 shadow-2xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600/50 hover:shadow-lg dark:hover:shadow-blue-500/10">
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center space-x-4">
                                     <div className="text-5xl drop-shadow-lg">{emergencyType.icon}</div>
                                     <div>
-                                        <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+                                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 tracking-tight">
                                             {emergencyType.name}
                                             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 animate-gradient text-xl">
                                                 Emergency Response
@@ -183,15 +183,15 @@ export const DisasterDetailsUserPage: React.FC = () => {
                         </div>
 
                         {/* Tabs */}
-                        <div className="bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl hover:bg-gray-800/40 transition-all duration-300 hover:border-gray-600/50">
-                            <div className="flex space-x-1 border-b border-gray-700/50 px-6">
+                        <div className="bg-white dark:bg-gray-800/30 backdrop-blur-xl border border-gray-200 dark:border-gray-700/50 rounded-2xl shadow-2xl hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600/50">
+                            <div className="flex space-x-1 border-b border-gray-200 dark:border-gray-700/50 px-6">
                                 {tabs.map((tab, index) => (
                                     <button
                                         key={tab.name}
                                         onClick={() => setSelectedTab(index)}
                                         className={`flex items-center space-x-2 px-6 py-4 text-sm font-medium border-b-2 transition-all duration-300 ${selectedTab === index
-                                                ? 'border-blue-500 text-blue-400 bg-blue-500/10'
-                                                : 'border-transparent text-gray-300 hover:text-gray-100 hover:border-gray-500/50 hover:bg-gray-700/30'
+                                                ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10'
+                                                : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-300 dark:hover:border-gray-500/50 hover:bg-gray-100 dark:hover:bg-gray-700/30'
                                             }`}
                                     >
                                         <tab.icon className="w-5 h-5" />
@@ -370,7 +370,7 @@ export const DisasterDetailsUserPage: React.FC = () => {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
                 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-4xl w-full bg-gray-800/90 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl">
+                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white dark:bg-gray-800/90 backdrop-blur-xl border border-gray-200 dark:border-gray-700/50 rounded-2xl shadow-2xl">
                         <div className="relative">
                             <button
                                 onClick={() => setIsImageModalOpen(false)}

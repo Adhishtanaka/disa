@@ -415,7 +415,7 @@ export const DisasterDetailsGovPage: React.FC = () => {
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white rounded-xl shadow-xl">
+                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
                         <div className="relative">
                             <button
                                 onClick={() => setIsImageModalOpen(false)}
@@ -437,7 +437,7 @@ export const DisasterDetailsGovPage: React.FC = () => {
             <Dialog open={isArchiveModalOpen} onClose={() => setIsArchiveModalOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-md w-full bg-white rounded-xl shadow-xl p-8">
+                    <DialogPanel className="mx-auto max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
                         <div className="flex flex-col items-center">
                             <XMarkIcon className="w-12 h-12 text-yellow-500 mb-4" />
                             <h2 className="text-xl font-bold mb-2 text-gray-900">Confirm Archive</h2>

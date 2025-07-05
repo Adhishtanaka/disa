@@ -207,30 +207,30 @@ const CommunicationHub: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
-          <ArrowPathIcon className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-400" />
-          <p className="text-gray-300">Loading chat...</p>
+          <ArrowPathIcon className="w-8 h-8 animate-spin mx-auto mb-4 text-blue-600 dark:text-blue-400" />
+          <p className="text-gray-600 dark:text-gray-300">Loading chat...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col transition-colors duration-300">
       {/* Mobile Header */}
-      <div className="lg:hidden bg-gray-800/50 backdrop-blur-sm border-b border-gray-700/50 px-4 py-3">
+      <div className="lg:hidden bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700/50 px-4 py-3 transition-colors duration-300">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 mr-3 text-gray-300 hover:text-white hover:bg-gray-800/70 rounded-lg transition-colors"
+              className="p-2 mr-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800/70 rounded-lg transition-colors"
             >
               {isSidebarOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-white">Communication Hub</h1>
-              <p className="text-sm text-gray-400">{reportTitle}</p>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">Communication Hub</h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{reportTitle}</p>
             </div>
           </div>
         </div>

@@ -4,6 +4,7 @@ import type {ChangeEvent, FormEvent} from 'react';
 import { userSignupSchema } from '../../schema/user';
 import { authService } from '../../services/auth';
 import { useNavigate } from 'react-router';
+import Alert from '../../components/common/Alert';
 
 type SignupFormData = z.infer<typeof userSignupSchema>;
 
@@ -15,40 +16,27 @@ const SignUp = () => {
   const [skills, setSkills] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [alert, setAlert] = useState<{ type: 'error' | 'success' | 'warning' | 'info'; message: string } | null>(null);
 
   // Real-time form validation
   useEffect(() => {
-    const step1Valid = formData.name && formData.email && formData.phone && formData.password;
-    const step2Valid = formData.role;
-    const step3Valid = formData.role === 'user' || 
-                     (formData.role === 'volunteer' && skills) ||
-                     (formData.role === 'first_responder' && formData.department && formData.unit) ||
-                     (formData.role === 'government' && formData.department && formData.position);
-    
-    setIsFormValid(!!(step1Valid && step2Valid && step3Valid));
+    // Form validation logic can be added here if needed
   }, [formData, skills]);
 
-  // Password strength indicator
+  // Password strength indicator (removed for now)
   useEffect(() => {
-    if (formData.password) {
-      let strength = 0;
-      if (formData.password.length >= 8) strength += 25;
-      if (/[A-Z]/.test(formData.password)) strength += 25;
-      if (/[0-9]/.test(formData.password)) strength += 25;
-      if (/[^A-Za-z0-9]/.test(formData.password)) strength += 25;
-      setPasswordStrength(strength);
-    } else {
-      setPasswordStrength(0);
-    }
+    // Password strength logic can be added here if needed
   }, [formData.password]);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear alert when user starts typing
+    if (alert) setAlert(null);
+    // Clear specific field error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -65,9 +53,16 @@ const SignUp = () => {
       };
       
       const validatedData = userSignupSchema.parse(formDataToValidate);
-      authService.signup(validatedData)
-      navigate('/auth/signin/');
+      await authService.signup(validatedData);
+      setAlert({
+        type: 'success',
+        message: 'Account created successfully! Redirecting to sign in...'
+      });
+      setTimeout(() => {
+        navigate('/auth/signin/');
+      }, 2000);
     } catch (error) {
+      console.error('Signup error:', error);
       if (error instanceof z.ZodError) {
         const errorMap: Record<string, string> = {};
         error.errors.forEach(err => {
@@ -76,6 +71,20 @@ const SignUp = () => {
           }
         });
         setErrors(errorMap);
+        setAlert({
+          type: 'error',
+          message: 'Please check the form fields and try again.'
+        });
+      } else if (error instanceof Error) {
+        setAlert({
+          type: 'error',
+          message: error.message || 'Signup failed. Please try again.'
+        });
+      } else {
+        setAlert({
+          type: 'error',
+          message: 'An unexpected error occurred. Please try again.'
+        });
       }
     } finally {
       setIsLoading(false);
@@ -266,6 +275,17 @@ const SignUp = () => {
 
         {/* Form Container */}
         <div className="bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 shadow-2xl hover:bg-gray-800/40 transition-all duration-300">
+          {/* Alert Component */}
+          {alert && (
+            <div className="mb-6">
+              <Alert
+                type={alert.type}
+                message={alert.message}
+                onClose={() => setAlert(null)}
+              />
+            </div>
+          )}
+          
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-5">
               <div className="group">
@@ -373,13 +393,23 @@ const SignUp = () => {
 
             <button
               type="submit"
-              className="group w-full py-4 px-6 border border-transparent rounded-xl shadow-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 focus:ring-offset-gray-900 font-medium text-lg transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl"
+              disabled={isLoading}
+              className="group w-full py-4 px-6 border border-transparent rounded-xl shadow-lg text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 focus:ring-offset-gray-900 font-medium text-lg transition-all duration-200 transform hover:-translate-y-0.5 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none"
             >
               <span className="flex items-center justify-center">
-                Create Account
-                <svg className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
+                {isLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2"></div>
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    Create Account
+                    <svg className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </>
+                )}
               </span>
             </button>
           </form>

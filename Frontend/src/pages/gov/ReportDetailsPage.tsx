@@ -401,7 +401,7 @@ export const ReportDetailsPage: React.FC = () => {
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white rounded-xl shadow-xl">
+                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
                         <div className="relative">
                             <button
                                 onClick={() => setIsImageModalOpen(false)}
@@ -423,11 +423,11 @@ export const ReportDetailsPage: React.FC = () => {
             <Dialog open={isAcceptModalOpen} onClose={() => setIsAcceptModalOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-md w-full bg-white rounded-xl shadow-xl p-8">
+                    <DialogPanel className="mx-auto max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
                         <div className="flex flex-col items-center">
                             <CheckCircleIcon className="w-12 h-12 text-green-600 mb-4" />
-                            <h2 className="text-xl font-bold mb-2 text-gray-900">Confirm Accept</h2>
-                            <p className="text-gray-700 mb-6 text-center">Are you sure you want to <span className="font-semibold text-green-700">accept</span> this disaster report? This will mark it as <span className="font-semibold">Active</span>.</p>
+                            <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Confirm Accept</h2>
+                            <p className="text-gray-700 dark:text-gray-300 mb-6 text-center">Are you sure you want to <span className="font-semibold text-green-700 dark:text-green-400">accept</span> this disaster report? This will mark it as <span className="font-semibold">Active</span>.</p>
                             <div className="flex space-x-4 w-full">
                                 <button
                                     onClick={handleAccept}
@@ -451,7 +451,7 @@ export const ReportDetailsPage: React.FC = () => {
             <Dialog open={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} className="relative z-50">
                 <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-md w-full bg-white rounded-xl shadow-xl p-8">
+                    <DialogPanel className="mx-auto max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
                         <div className="flex flex-col items-center">
                             <XCircleIcon className="w-12 h-12 text-yellow-500 mb-4" />
                             <h2 className="text-xl font-bold mb-2 text-gray-900">Confirm Archive</h2>

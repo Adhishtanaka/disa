@@ -27,12 +27,14 @@ import { FirstRespondersDashboard } from './pages/fr/frdashboard';
 import { DisasterDetailsFr } from './pages/fr/disasterDetailsfr';
 import Navbar from './components/auth/Navbar';
 import Footer from './components/public/Footer';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 function App() {
   
   return (
-    <>
-    <Navbar />
+    <ThemeProvider>
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+        <Navbar />
 <Routes>
      {/* Public Routes */}
       <Route path="/public/" element={
@@ -145,11 +147,12 @@ function App() {
             <Route path="/unauthorized" element={<Unauthorized />} />
                   <Route path="/" element={<Navigate to="/public" replace />} />
       <Route path="*" element={<Navigate to="/public" replace />} />
-</Routes>   
-      {/* Add Footer at the bottom */}
-      <Footer />
-    </>
-  )
+        </Routes>   
+        {/* Add Footer at the bottom */}
+        <Footer />
+      </div>
+    </ThemeProvider>
+  );
 }
 
 export default App

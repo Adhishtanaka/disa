@@ -78,10 +78,10 @@ export const GovernmentDashboard = () => {
 
   const getUrgencyColor = (urgency: UrgencyLevel): string => {
     switch (urgency) {
-      case 'high': return 'text-red-600 bg-red-100';
-      case 'medium': return 'text-yellow-600 bg-yellow-100';
-      case 'low': return 'text-green-600 bg-green-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'high': return 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400';
+      case 'medium': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400';
+      case 'low': return 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400';
+      default: return 'text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400';
     }
   };
 
@@ -103,23 +103,23 @@ export const GovernmentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900">
-      {/* Ambient floating background elements for depth */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl -z-10" style={{ filter: 'blur(120px)' }} />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl -z-10" style={{ filter: 'blur(120px)' }} />
-      <section className="py-16 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+      {/* Ambient floating background elements for depth - only in dark mode */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl -z-10 dark:block hidden" style={{ filter: 'blur(120px)' }} />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl -z-10 dark:block hidden" style={{ filter: 'blur(120px)' }} />
+      <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-4xl font-bold text-white mb-2">Government Dashboard</h1>
-                <p className="text-gray-400">Monitor and manage disaster response operations</p>
+                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Government Dashboard</h1>
+                <p className="text-gray-600 dark:text-gray-400">Monitor and manage disaster response operations</p>
               </div>
               <button
                 onClick={fetchDisasters}
                 disabled={loading}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-900 disabled:opacity-50"
               >
                 <ArrowPathIcon className={`w-5 h-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Refresh Data
@@ -129,15 +129,15 @@ export const GovernmentDashboard = () => {
 
           {/* --- Statistics Cards & Charts --- */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 flex flex-col items-center hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-700/50 hover:scale-110 transition-transform duration-300 mb-3">
-                <DocumentTextIcon className="w-7 h-7 text-blue-400" />
+            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700/50 rounded-xl p-6 flex flex-col items-center hover:bg-gray-50 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700/50 hover:scale-110 transition-transform duration-300 mb-3">
+                <DocumentTextIcon className="w-7 h-7 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="text-2xl font-bold text-blue-400">{totalTasks}</div>
-              <div className="text-gray-400 mt-1">Total Tasks</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalTasks}</div>
+              <div className="text-gray-600 dark:text-gray-400 mt-1">Total Tasks</div>
             </div>
-            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 flex flex-col items-center hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-700/50 hover:scale-110 transition-transform duration-300 mb-3">
+            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700/50 rounded-xl p-6 flex flex-col items-center hover:bg-gray-50 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-lg hover:scale-105">
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-700/50 hover:scale-110 transition-transform duration-300 mb-3">
                 <ArrowPathIcon className="w-7 h-7 text-green-400" />
               </div>
               <div className="text-2xl font-bold text-green-400">{completedTasks}</div>
