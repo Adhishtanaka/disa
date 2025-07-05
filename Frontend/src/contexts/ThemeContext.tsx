@@ -17,9 +17,12 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Check for saved theme preference or default to 'dark'
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    return savedTheme || 'dark';
+    // Check for saved theme preference or default to 'dark' for better initial visibility
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme;
+      return savedTheme || 'dark';
+    }
+    return 'dark';
   });
 
   const isDarkMode = theme === 'dark';
@@ -27,22 +30,27 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+    }
   };
 
   useEffect(() => {
     const root = window.document.documentElement;
     const body = window.document.body;
     
-    // Remove previous theme classes
+    // Force remove all theme classes first
     root.classList.remove('light', 'dark');
     body.classList.remove('light', 'dark');
     
-    // Add current theme class to both html and body
+    // Force reflow to ensure classes are removed
+    void root.offsetHeight;
+    
+    // Add current theme class
     root.classList.add(theme);
     body.classList.add(theme);
     
-    // Also add to data attribute for CSS selectors
+    // Set data attribute for CSS selectors
     root.setAttribute('data-theme', theme);
     
     // Update meta theme-color for mobile browsers
