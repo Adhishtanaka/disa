@@ -55,17 +55,7 @@ const Navbar: React.FC = () => {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ) : (
-              <>
-                <Link 
-                  to="/public" 
-                  className="flex flex-col items-center text-gray-300 hover:text-white transition-colors duration-200 relative group py-1"
-                >
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                  </svg>
-                  <span className="text-xs font-medium">Home</span>
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
-                </Link>
+              <>   
                 {role && (
                   <Link
                     to={roleDashboardPath[role] || '/public'}
@@ -142,13 +132,13 @@ const Navbar: React.FC = () => {
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
                     </Link>
                     <Link 
-                      to="/private/user-profile" 
+                      to="/vol/analytics" 
                       className="flex flex-col items-center text-gray-300 hover:text-white transition-colors duration-200 relative group py-1"
                     >
                       <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                       </svg>
-                      <span className="text-xs font-medium">My Profile</span>
+                      <span className="text-xs font-medium">Analytics</span>
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
                     </Link>
                   </>
@@ -232,13 +222,13 @@ const Navbar: React.FC = () => {
                       </div>
                     </div>
                     <Link 
-                      to="/private/user-profile" 
+                      to="/gov/analytics" 
                       className="flex flex-col items-center text-gray-300 hover:text-white transition-colors duration-200 relative group py-1"
                     >
                       <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                       </svg>
-                      <span className="text-xs font-medium">My Profile</span>
+                      <span className="text-xs font-medium">Analytics</span>
                       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
                     </Link>
                   </>
@@ -323,16 +313,6 @@ const Navbar: React.FC = () => {
               </>
             ) : (
               <>
-                <Link 
-                  to="/private/user-profile" 
-                  className="flex flex-col items-center text-amber-800 dark:text-gray-300 hover:text-amber-900 dark:hover:text-white transition-colors duration-200 relative group py-1"
-                >
-                  <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                  </svg>
-                  <span className="text-xs font-medium">Profile</span>
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
-                </Link>
                 {role === 'user' && (
                   <Link 
                     to="/user" 
@@ -534,10 +514,10 @@ const Navbar: React.FC = () => {
                       Disaster Details
                     </Link>
                     <Link 
-                      to="/private/user-profile" 
+                      to="/vol/analytics" 
                       className="block px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-700 font-medium transition-colors duration-200"
                     >
-                      My Profile
+                      Analytics
                     </Link>
                   </>
                 )}
@@ -599,10 +579,10 @@ const Navbar: React.FC = () => {
                       </Link>
                     </div>
                     <Link 
-                      to="/private/user-profile" 
+                      to="/gov/analytics" 
                       className="block px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-700 font-medium transition-colors duration-200"
                     >
-                      My Profile
+                      Analytics
                     </Link>
                   </>
                 )}

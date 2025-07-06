@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router';
-import { ArrowPathIcon, ExclamationTriangleIcon,DocumentTextIcon } from '@heroicons/react/24/outline';
+import { 
+  ArrowPathIcon, 
+  ExclamationTriangleIcon,
+  DocumentTextIcon
+} from '@heroicons/react/24/outline';
 import { appwriteService } from '../../services/appwrite';
 import type { Disaster, DisasterStatus, UrgencyLevel } from '../../types/disaster';
 import { WorldMap } from '../../components/private/WorldMap';
@@ -109,23 +113,21 @@ export const VolunteerDashboard = () => {
       {/* Main Content */}
       <section className="py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Statistics Card */}
-          <div className="mb-12">
-            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-green-300/50 dark:hover:border-green-500/50">
-              <div className="flex items-center justify-between">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-100/50 dark:bg-green-500/20 group-hover:scale-110 transition-transform duration-300">
-                  <DocumentTextIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
+
+          {/* Error Message */}
+          {error && (
+            <div className="group relative bg-red-50/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-700/50 rounded-xl p-6 mb-8 shadow-sm hover:bg-red-50/70 dark:hover:bg-red-900/30 transition-all duration-300">
+              <div className="flex items-start">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 mr-4 group-hover:scale-110 transition-transform duration-300">
+                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">{filteredDisasters.length}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Active Missions</div>
+                <div>
+                  <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-1">Connection Error</h3>
+                  <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
                 </div>
-              </div>
-              <div className="mt-4 text-sm text-gray-500 dark:text-gray-500">
-                Available volunteer opportunities
               </div>
             </div>
-          </div>
+          )}
 
           {/* Map and Missions Grid Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">

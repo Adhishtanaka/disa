@@ -16,12 +16,14 @@ import UserDashboard from './pages/user/userDashbord';
 import Home from './pages/public/Home';
 import { DisasterDetailsUserPage } from './pages/user/disasterDetails';
 import { GovernmentDashboard } from './pages/gov/govDashboard';
+import GovAnalytics from './pages/gov/govAnalytics';
 import AddResourceComponent from './pages/gov/addResource';
 import { DisasterDetailsGovPage } from './pages/gov/disasterDetails';
 import AIMetricsPage from './pages/gov/aiMetrics';
 import { ReportDetailsPage } from './pages/gov/ReportDetailsPage';
 import CommunicationHub from './pages/communication/communicationHub';
 import { VolunteerDashboard } from './pages/vol/voldashboard';
+import { VolAnalytics } from './pages/vol/volAnalytics';
 import { DisasterDetailsVol } from './pages/vol/disasterDetailsvol';
 import { FirstRespondersDashboard } from './pages/fr/frdashboard';
 import { DisasterDetailsFr } from './pages/fr/disasterDetailsfr';
@@ -81,6 +83,13 @@ function App() {
         </GovernmentRoute>
       } />
 
+      {/* Government Analytics Routes */}
+      <Route path="/gov/analytics" element={
+        <GovernmentRoute>
+          <GovAnalytics />
+        </GovernmentRoute>
+      } />
+
       {/* Government Disaster Details Routes */}
       <Route path="/gov/disaster/:disasterId" element={
         <GovernmentRoute>
@@ -113,6 +122,13 @@ function App() {
       <Route path="/vol/" element={
         <VolunteerRoute>
           <VolunteerDashboard />
+        </VolunteerRoute>
+      } />
+
+      {/* Volunteer Analytics Routes */}
+      <Route path="/vol/analytics" element={
+        <VolunteerRoute>
+          <VolAnalytics />
         </VolunteerRoute>
       } />
 
