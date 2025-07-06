@@ -29,9 +29,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
+    console.log('🎨 ThemeContext: Toggling theme from', theme, 'to', newTheme);
     setTheme(newTheme);
     if (typeof window !== 'undefined') {
       localStorage.setItem('theme', newTheme);
+      console.log('🎨 ThemeContext: Saved theme to localStorage:', newTheme);
     }
   };
 

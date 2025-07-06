@@ -34,6 +34,10 @@ function App() {
   return (
     <ThemeProvider>
       <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+        {/* Debug theme indicator */}
+        <div className="fixed top-0 left-0 z-50 bg-green-500 dark:bg-red-500 text-white px-2 py-1 text-xs">
+          Theme: <span className="hidden dark:inline">DARK</span><span className="dark:hidden">LIGHT</span>
+        </div>
         <Navbar />
 <Routes>
      {/* Public Routes */}

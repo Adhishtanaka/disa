@@ -61,13 +61,13 @@ const DisasterManagementLanding = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="mb-8">
-              <span className="inline-block px-4 py-2 bg-blue-500/20 text-blue-600 dark:text-blue-300 rounded-full text-sm font-medium border border-blue-500/30">
+              <span className="inline-block px-4 py-2 bg-blue-500/20 text-blue-600 dark:text-blue-300 rounded-full text-sm font-medium border border-blue-500/30 backdrop-blur-sm">
                 🚨 Emergency Response System
               </span>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight transition-colors duration-300">
               Disaster Intelligence
-              <span className="block bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
                 & Safety Analytics
               </span>
             </h1>
@@ -90,8 +90,8 @@ const DisasterManagementLanding = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20">
             {stats.map((stat, index) => (
               <div key={index} className="group relative">
-                <div className="bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-gray-200/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:border-gray-300/50 dark:hover:border-gray-600/50 hover:shadow-lg hover:scale-105">
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-200/50 dark:bg-gray-700/50 mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                <div className="bg-gray-100 dark:bg-gray-800 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl p-6 text-center hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:scale-105">
+                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 mb-4 group-hover:scale-110 transition-transform duration-300`}>
                     <stat.icon className={`h-6 w-6 ${stat.color}`} />
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1 transition-colors duration-300">{stat.number}</div>
@@ -106,11 +106,11 @@ const DisasterManagementLanding = () => {
       <NearbyDisastersComponent />
 
       {/* Features Section */}
-      <section className="py-24 bg-gray-50/50 dark:bg-gray-800/50 transition-colors duration-300">
+      <section className="py-24 bg-gray-50 dark:bg-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <div className="mb-4">
-              <span className="inline-block px-4 py-2 bg-gray-200/50 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium border border-gray-300/50 dark:border-gray-600/50">
+              <span className="inline-block px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium border border-gray-300 dark:border-gray-600">
                 ⚡ Advanced Features
               </span>
             </div>
@@ -126,7 +126,7 @@ const DisasterManagementLanding = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feature, index) => (
               <div key={index} className="group relative">
-                <div className={`bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border ${feature.borderColor} rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-900/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-opacity-50`}>
+                <div className={`bg-white dark:bg-gray-900 backdrop-blur-sm border ${feature.borderColor} rounded-xl p-8 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-opacity-50`}>
                   <div className="flex items-center mb-6">
                     <div className={`inline-flex items-center justify-center w-12 h-12 rounded-full ${feature.bgColor} mr-4 group-hover:scale-110 transition-transform duration-300`}>
                       <feature.icon className={`h-6 w-6 ${feature.color}`} />

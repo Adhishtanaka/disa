@@ -21,14 +21,14 @@ export const ThemeTestComponent: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50 p-4 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-w-xs">
-      <div className="text-sm text-gray-900 dark:text-white mb-2">
+    <div className="fixed top-4 right-4 z-50 p-4 bg-red-100 dark:bg-green-100 border-4 border-red-500 dark:border-green-500 rounded-lg shadow-lg max-w-xs">
+      <div className="text-sm text-red-900 dark:text-green-900 mb-2 font-bold">
         Current Theme: <strong>{theme}</strong>
       </div>
-      <div className="text-sm text-gray-900 dark:text-white mb-2">
+      <div className="text-sm text-red-900 dark:text-green-900 mb-2 font-bold">
         Is Dark Mode: <strong>{isDarkMode.toString()}</strong>
       </div>
-      <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+      <div className="text-xs text-red-700 dark:text-green-700 mb-2">
         DOM Classes: <code>{domClasses}</code>
       </div>
       <button
@@ -37,16 +37,16 @@ export const ThemeTestComponent: React.FC = () => {
       >
         Toggle Theme
       </button>
-      <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+      <div className="mt-2 text-xs text-red-700 dark:text-green-700">
         This box should change color when you toggle.
       </div>
       
       {/* Visual test elements */}
       <div className="mt-3 space-y-2">
-        <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded">
-          <div className="text-xs text-gray-900 dark:text-white">Test Element</div>
+        <div className="p-2 bg-red-200 dark:bg-green-200 rounded">
+          <div className="text-xs text-red-900 dark:text-green-900">Test Element</div>
         </div>
-        <div className="w-full h-2 bg-blue-200 dark:bg-blue-800 rounded"></div>
+        <div className="w-full h-2 bg-red-400 dark:bg-green-400 rounded"></div>
       </div>
     </div>
   );

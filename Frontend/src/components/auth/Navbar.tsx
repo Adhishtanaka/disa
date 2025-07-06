@@ -284,6 +284,26 @@ const Navbar: React.FC = () => {
           <div className="hidden md:flex items-center space-x-4 justify-end">
             {!isAuthenticated ? (
               <>
+                <button 
+                  onClick={() => {
+                    console.log('Theme toggle clicked! Current theme:', isDarkMode ? 'dark' : 'light');
+                    toggleTheme();
+                  }}
+                  className="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 relative group py-1" 
+                  title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                >
+                  {isDarkMode ? (
+                    <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                  )}
+                  <span className="text-xs font-medium">{isDarkMode ? "Light Mode" : "Dark Mode"}</span>
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
+                </button>
                 <Link 
                   to="/auth/signin" 
                   className="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 relative group py-1"
@@ -305,7 +325,7 @@ const Navbar: React.FC = () => {
               <>
                 <Link 
                   to="/private/user-profile" 
-                  className="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 relative group py-1"
+                  className="flex flex-col items-center text-amber-800 dark:text-gray-300 hover:text-amber-900 dark:hover:text-white transition-colors duration-200 relative group py-1"
                 >
                   <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -416,6 +436,25 @@ const Navbar: React.FC = () => {
                 >
                   Home
                 </Link>
+                <button 
+                  onClick={() => {
+                    console.log('Theme toggle clicked in mobile menu! Current theme:', isDarkMode ? 'dark' : 'light');
+                    toggleTheme();
+                    setMenuOpen(false); // Close menu after toggle
+                  }}
+                  className="w-full flex items-center px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-700 font-medium transition-colors duration-200"
+                >
+                  {isDarkMode ? (
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                  )}
+                  {isDarkMode ? "Light Mode" : "Dark Mode"}
+                </button>
                 <Link 
                   to="/auth/signin" 
                   className="block px-6 py-3 text-gray-300 hover:text-white hover:bg-gray-700 font-medium transition-colors duration-200"

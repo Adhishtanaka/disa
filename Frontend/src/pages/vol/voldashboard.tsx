@@ -127,130 +127,118 @@ export const VolunteerDashboard = () => {
             </div>
           </div>
 
-          {/* Enhanced World Map Section */}
-          <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-green-300/50 dark:hover:border-green-500/50">
-            <div className="flex justify-between items-center mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Active Mission Map</h2>
-                <p className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                  Real-time view of disaster zones needing volunteer support
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-green-600 dark:text-green-400">{filteredDisasters.length}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">Active Zones</div>
-              </div>
-            </div>
-            {loading ? (
-              <div className="h-96 bg-gray-100/50 dark:bg-gray-900/50 rounded-lg animate-pulse flex items-center justify-center transition-colors duration-300">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-500/20 mb-4">
-                    <ArrowPathIcon className="w-6 h-6 text-green-600 dark:text-green-400 animate-spin" />
-                  </div>
-                  <div className="text-gray-600 dark:text-gray-400">Loading mission map...</div>
-                </div>
-              </div>
-            ) : (
-              <div className="relative rounded-lg overflow-hidden">
-                <WorldMap disasters={filteredDisasters} activeTab={"active"} />
-              </div>
-            )}
-          </div>
-
-          {/* Error Message with Enhanced UX */}
-          {error && (
-            <div className="group relative bg-red-50/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-700/50 rounded-xl p-6 mb-8 shadow-sm hover:bg-red-50/70 dark:hover:bg-red-900/30 transition-all duration-300">
-              <div className="flex items-start">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 mr-4 group-hover:scale-110 transition-transform duration-300">
-                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </div>
+          {/* Map and Missions Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-12">
+            {/* Enhanced World Map Section */}
+            <div className="lg:col-span-3 group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-green-300/50 dark:hover:border-green-500/50">
+              <div className="flex justify-between items-center mb-8">
                 <div>
-                  <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-1">Connection Error</h3>
-                  <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Active Mission Map</h2>
+                  <p className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                    Real-time view of disaster zones needing volunteer support
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">{filteredDisasters.length}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-500">Active Zones</div>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Enhanced Mission List */}
-          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-lg overflow-hidden hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-            <div className="border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Available Missions</h2>
-              <p className="text-gray-600 dark:text-gray-400">Join disaster response efforts in your area</p>
-            </div>
-            <div className="p-8">
               {loading ? (
-                <div className="space-y-6">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 animate-pulse bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm transition-colors duration-300">
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="space-y-3">
-                          <div className="h-5 bg-gray-300/50 dark:bg-gray-700/50 rounded w-48"></div>
-                          <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-32"></div>
-                        </div>
-                        <div className="h-8 bg-gray-300/50 dark:bg-gray-700/50 rounded w-20"></div>
-                      </div>
-                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-full mb-2"></div>
-                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-3/4"></div>
+                <div className="h-96 bg-gray-100/50 dark:bg-gray-900/50 rounded-lg animate-pulse flex items-center justify-center transition-colors duration-300">
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-500/20 mb-4">
+                      <ArrowPathIcon className="w-6 h-6 text-green-600 dark:text-green-400 animate-spin" />
                     </div>
-                  ))}
-                </div>
-              ) : filteredDisasters.length === 0 ? (
-                <div className="text-center py-20">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700/50 mb-6">
-                    <ExclamationTriangleIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+                    <div className="text-gray-600 dark:text-gray-400">Loading mission map...</div>
                   </div>
-                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3">No active missions found</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Check back later for new volunteer opportunities.</p>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  {filteredDisasters.map((disaster) => (
-                    <div
-                      key={disaster.$id}
-                      className="group relative border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-green-300/50 dark:hover:border-green-500/50"
-                    >
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-4 mb-4">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white capitalize group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">
-                              {disaster.emergency_type} Emergency
-                            </h3>
-                            <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${getUrgencyColor(disaster.urgency_level)}`}>
-                              {disaster.urgency_level?.toUpperCase()}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed transition-colors duration-300">{disaster.situation}</p>
-                          <div className="flex items-center gap-6 text-sm">
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border transition-all duration-300 ${getStatusColor(disaster.status)}`}>
-                              {disaster.status.toUpperCase()}
-                            </span>
-                            <span className="text-gray-500 dark:text-gray-500">
-                              📅 {new Date(disaster.submitted_time * 1000).toLocaleDateString()}
-                            </span>
-                            {disaster.latitude && disaster.longitude && (
-                              <span className="text-gray-500 dark:text-gray-500">
-                                📍 {disaster.latitude.toFixed(3)}, {disaster.longitude.toFixed(3)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Enhanced Action Buttons */}
-                      <div className="flex gap-4 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
-                        <Link
-                          to={`/vol/disaster/${disaster.$id}/`}
-                          className="group bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center"
-                        >
-                          <DocumentTextIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                          Join Mission
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
+                <div className="relative rounded-lg overflow-hidden">
+                  <WorldMap disasters={filteredDisasters} activeTab={"active"} />
                 </div>
               )}
+            </div>
+
+            {/* Enhanced Mission List */}
+            <div className="lg:col-span-1 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-lg overflow-hidden hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+              <div className="border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30 p-6">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Available Missions</h2>
+                <p className="text-gray-600 dark:text-gray-400">Join disaster response efforts in your area</p>
+              </div>
+              <div className="p-6 max-h-[500px] overflow-y-auto">
+                {loading ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 animate-pulse bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm transition-colors duration-300">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="space-y-3">
+                            <div className="h-5 bg-gray-300/50 dark:bg-gray-700/50 rounded w-48"></div>
+                            <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-32"></div>
+                          </div>
+                          <div className="h-8 bg-gray-300/50 dark:bg-gray-700/50 rounded w-20"></div>
+                        </div>
+                        <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-full mb-2"></div>
+                        <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-3/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : filteredDisasters.length === 0 ? (
+                  <div className="text-center py-20">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700/50 mb-6">
+                      <ExclamationTriangleIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3">No active missions found</h3>
+                    <p className="text-gray-600 dark:text-gray-400">Check back later for new volunteer opportunities.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredDisasters.map((disaster) => (
+                      <div
+                        key={disaster.$id}
+                        className="group relative border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-green-300/50 dark:hover:border-green-500/50"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-3">
+                              <h3 className="text-lg font-bold text-gray-900 dark:text-white capitalize group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">
+                                {disaster.emergency_type} Emergency
+                              </h3>
+                              <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border transition-all duration-300 ${getUrgencyColor(disaster.urgency_level)}`}>
+                                {disaster.urgency_level?.toUpperCase()}
+                              </span>
+                            </div>
+                            <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm leading-relaxed transition-colors duration-300 line-clamp-2">{disaster.situation}</p>
+                            <div className="flex items-center gap-4 text-xs">
+                              <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium border transition-all duration-300 ${getStatusColor(disaster.status)}`}>
+                                {disaster.status.toUpperCase()}
+                              </span>
+                              <span className="text-gray-500 dark:text-gray-500">
+                                📅 {new Date(disaster.submitted_time * 1000).toLocaleDateString()}
+                              </span>
+                              {disaster.latitude && disaster.longitude && (
+                                <span className="text-gray-500 dark:text-gray-500">
+                                  📍 {disaster.latitude.toFixed(2)}, {disaster.longitude.toFixed(2)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Enhanced Action Buttons */}
+                        <div className="flex gap-2 pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
+                          <Link
+                            to={`/vol/disaster/${disaster.$id}/`}
+                            className="group bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center text-sm"
+                          >
+                            <DocumentTextIcon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                            Join Mission
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

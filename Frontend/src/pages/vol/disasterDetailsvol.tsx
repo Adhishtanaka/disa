@@ -140,39 +140,78 @@ export const DisasterDetailsVol: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+            {/* Hero Section with Advanced UX */}
+            <section className="relative py-16 bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 overflow-hidden transition-colors duration-300">
+                {/* Background Pattern */}
+                <div className="absolute inset-0 opacity-5">
+                    <div className="absolute inset-0 bg-grid-pattern"></div>
+                </div>
+                
+                {/* Gradient Orbs */}
+                <div className="absolute top-0 left-0 w-72 h-72 bg-red-500/20 rounded-full blur-3xl animate-float"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float-reverse"></div>
+                <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-yellow-500/10 rounded-full blur-3xl animate-pulse"></div>
+                
+                {/* Floating Elements */}
+                <div className="absolute top-20 right-20 w-4 h-4 bg-red-400/30 rounded-full animate-bounce"></div>
+                <div className="absolute bottom-20 left-20 w-3 h-3 bg-blue-400/30 rounded-full animate-bounce delay-1000"></div>
+                <div className="absolute top-1/3 left-10 w-2 h-2 bg-yellow-400/30 rounded-full animate-ping"></div>
+                
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* Enhanced Header */}
+                    <div className="text-center mb-8">
+                        <div className="mb-6">
+                            <span className="inline-block px-4 py-2 bg-red-500/20 text-red-600 dark:text-red-300 rounded-full text-sm font-medium border border-red-500/30 transition-colors duration-300">
+                                {emergencyType.icon} {emergencyType.name}
+                            </span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 tracking-tight">
+                            Emergency Response
+                            <span className="block bg-gradient-to-r from-red-500 to-red-700 dark:from-red-400 dark:to-red-600 bg-clip-text text-transparent">
+                                Mission Details
+                            </span>
+                        </h1>
+                        <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed transition-colors duration-300">
+                            Comprehensive disaster information and volunteer coordination for effective emergency response
+                        </p>
+                        
+                        {/* Status indicators */}
+                        <div className="flex flex-wrap justify-center gap-4">
+                            <div className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-medium ${urgencyLevel.color} dark:bg-opacity-20 border border-current border-opacity-30`}>
+                                Priority: {urgencyLevel.text}
+                            </div>
+                            <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
+                                <div className={`w-2 h-2 rounded-full ${statusType.color} mr-2`}></div>
+                                Status: {statusType.text}
+                            </div>
+                            {disaster.submitted_time && (
+                                <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700">
+                                    Reported: {formatTimeAgo(disaster.submitted_time)}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {/* Main Content Section */}
+            <section className="py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Main Layout Grid */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Emergency Header Card */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-start justify-between">
-                                <div className="flex items-center space-x-4">
-                                    <div className="text-4xl">{emergencyType.icon}</div>
-                                    <div>
-                                        <h1 className="text-2xl font-bold text-gray-900 mb-1">{emergencyType.name}</h1>
-                                    </div>
-                                </div>
-                               
-                            </div>
-
-                           
-                        </div>
-
                         {/* Tabs */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-                            <div className="flex space-x-1 border-b border-gray-200 px-6">
+                        <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-lg overflow-hidden hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.01] hover:border-blue-300/50 dark:hover:border-blue-500/50">
+                            <div className="flex space-x-1 border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30 px-6">
                                 {tabs.map((tab, index) => (
                                     <button
                                         key={tab.name}
                                         onClick={() => setSelectedTab(index)}
-                                        className={`flex items-center space-x-2 px-4 py-4 text-sm font-medium border-b-2 transition-colors ${selectedTab === index
-                                                ? 'border-blue-500 text-blue-600'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        className={`flex items-center space-x-2 px-4 py-4 text-sm font-medium border-b-2 transition-all duration-300 ${selectedTab === index
+                                                ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20'
+                                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/30'
                                             }`}
                                     >
                                         <tab.icon className="w-4 h-4" />
@@ -181,25 +220,26 @@ export const DisasterDetailsVol: React.FC = () => {
                                 ))}
                             </div>
 
-                            <div className="p-6">
+                            <div className="p-8 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm">
                                 {/* Overview Tab */}
                                 {selectedTab === 0 && (
                                     <div className="space-y-6">
                                         {imageUrl && (
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Visual Evidence</h3>
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">Visual Evidence</h3>
                                                 {!imageError ? (
-                                                    <div className="rounded-lg overflow-hidden bg-gray-100 border border-gray-200 cursor-pointer" onClick={() => setIsImageModalOpen(true)}>
+                                                    <div className="group relative rounded-xl overflow-hidden bg-gray-100/50 dark:bg-gray-900/50 border border-gray-200/50 dark:border-gray-700/50 cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02]" onClick={() => setIsImageModalOpen(true)}>
                                                         <img
                                                             src={imageUrl}
                                                             alt="Disaster evidence"
-                                                            className="w-full h-auto max-h-[400px] object-cover hover:opacity-90 transition-opacity"
+                                                            className="w-full h-auto max-h-[400px] object-cover group-hover:opacity-90 transition-opacity duration-300"
                                                             onError={() => setImageError(true)}
                                                         />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                                     </div>
                                                 ) : (
-                                                    <div className="w-full h-48 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center">
-                                                        <div className="text-center text-gray-500">
+                                                    <div className="w-full h-48 bg-gray-50/50 dark:bg-gray-900/50 rounded-xl border-2 border-dashed border-gray-300/50 dark:border-gray-600/50 flex items-center justify-center backdrop-blur-sm transition-colors duration-300">
+                                                        <div className="text-center text-gray-500 dark:text-gray-400">
                                                             <div className="text-3xl mb-2">📷</div>
                                                             <div>Image unavailable</div>
                                                         </div>
@@ -210,20 +250,20 @@ export const DisasterDetailsVol: React.FC = () => {
 
                                         {disaster.citizen_survival_guide && (
                                             <div>
-                                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Emergency Survival Guide</h3>
+                                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">Emergency Survival Guide</h3>
                                                 <Disclosure defaultOpen={false}>
                                                     {({ open }) => (
                                                         <>
-                                                            <DisclosureButton className="flex w-full justify-between rounded-lg bg-blue-50 px-4 py-3 text-left text-sm font-medium text-blue-900 hover:bg-blue-100 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75 transition-colors">
+                                                            <DisclosureButton className="flex w-full justify-between rounded-xl bg-blue-50/50 dark:bg-blue-900/20 backdrop-blur-sm px-6 py-4 text-left text-sm font-medium text-blue-900 dark:text-blue-300 hover:bg-blue-100/50 dark:hover:bg-blue-900/30 focus:outline-none focus-visible:ring focus-visible:ring-blue-500 focus-visible:ring-opacity-75 transition-all duration-300 border border-blue-200/50 dark:border-blue-500/30">
                                                                 <span>View Emergency Survival Guide</span>
                                                                 <ChevronDownIcon
                                                                     className={`${open ? 'transform rotate-180' : ''
-                                                                        } w-5 h-5 text-blue-500 transition-transform`}
+                                                                        } w-5 h-5 text-blue-500 dark:text-blue-400 transition-transform duration-300`}
                                                                 />
                                                             </DisclosureButton>
-                                                            <DisclosurePanel className="px-4 pb-2 pt-4 text-sm text-gray-700">
-                                                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                                                                    <div className="prose prose-blue max-w-none">
+                                                            <DisclosurePanel className="px-6 pb-4 pt-6 text-sm text-gray-700 dark:text-gray-300">
+                                                                <div className="bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-500/30 rounded-xl p-6 backdrop-blur-sm">
+                                                                    <div className="prose prose-blue dark:prose-invert max-w-none">
                                                                         <ReactMarkdown>{disaster.citizen_survival_guide}</ReactMarkdown>
                                                                     </div>
                                                                 </div>
@@ -240,19 +280,26 @@ export const DisasterDetailsVol: React.FC = () => {
                                 {selectedTab === 1 && (
                                     <div className="space-y-6">
                                         {/* Resource Map and List */}
-                                        <ResourceMap
-                                            disasterId={disaster.disaster_id}
-                                            disasterLocation={{ latitude: disaster.latitude, longitude: disaster.longitude }}
-                                            role="public"
-                                        />
+                                        <div className="rounded-xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
+                                            <ResourceMap
+                                                disasterId={disaster.disaster_id}
+                                                disasterLocation={{ 
+                                                    latitude: disaster.latitude || 0, 
+                                                    longitude: disaster.longitude || 0 
+                                                }}
+                                                role="public"
+                                            />
+                                        </div>
                                     </div>
                                 )}
 
                                 {/* Tasks Tab */}
                                 {selectedTab === 2 && (
                                     <div className="space-y-6">
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Tasks</h3>
-                                        <TaskList disasterId={disaster.disaster_id} role="vol" />
+                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">Tasks</h3>
+                                        <div className="rounded-xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50">
+                                            <TaskList disasterId={disaster.disaster_id} role="vol" />
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -262,79 +309,80 @@ export const DisasterDetailsVol: React.FC = () => {
                     {/* Sidebar */}
                     <div className="lg:col-span-1 space-y-6">
                         {/* Emergency Status */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Emergency Status</h3>
+                        <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-red-300/50 dark:hover:border-red-500/50">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">Emergency Status</h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-gray-700">Priority Level</span>
-                                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${urgencyLevel.color}`}>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">Priority Level</span>
+                                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${urgencyLevel.color} dark:bg-opacity-20 border border-current border-opacity-30 transition-all duration-300`}>
                                         {urgencyLevel.text}
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm font-medium text-gray-700">Status</span>
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">Status</span>
                                     <div className="flex items-center">
-                                        <div className={`w-2 h-2 rounded-full ${statusType.color} mr-2`}></div>
-                                        <span className="text-sm font-medium text-gray-900">{statusType.text}</span>
+                                        <div className={`w-2 h-2 rounded-full ${statusType.color} mr-2 animate-pulse`}></div>
+                                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100 transition-colors duration-300">{statusType.text}</span>
                                     </div>
                                 </div>
                                 {disaster.submitted_time && (
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm font-medium text-gray-700">Reported</span>
-                                        <span className="text-sm text-gray-900">{formatTimeAgo(disaster.submitted_time)}</span>
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-300">Reported</span>
+                                        <span className="text-sm text-gray-900 dark:text-gray-100 transition-colors duration-300">{formatTimeAgo(disaster.submitted_time)}</span>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Quick Actions */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                        <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-blue-300/50 dark:hover:border-blue-500/50">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 transition-colors duration-300">Quick Actions</h3>
                             <div className="space-y-3">
                                 <Link
                                     to={`/private/disaster/${disasterId}/communicationhub`}
-                                    className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                                    className="group w-full flex items-center justify-center px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-blue-300/50 dark:hover:border-blue-500/50"
                                 >
-                                    <UserIcon className="w-4 h-4 mr-2" />
+                                    <UserIcon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
                                     Communication Hub
                                 </Link>
                                 <button
                                     onClick={handleShare}
-                                    className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                                    className="group w-full flex items-center justify-center px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-green-300/50 dark:hover:border-green-500/50"
                                 >
-                                    <ShareIcon className="w-4 h-4 mr-2" />
+                                    <ShareIcon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
                                     Share Alert
                                 </button>
                                 <button
                                     onClick={handlePrint}
-                                    className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                                    className="group w-full flex items-center justify-center px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-purple-300/50 dark:hover:border-purple-500/50"
                                 >
-                                    <PrinterIcon className="w-4 h-4 mr-2" />
+                                    <PrinterIcon className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" />
                                     Print Details
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
+            </section>
 
             {/* Image Modal */}
             <Dialog open={isImageModalOpen} onClose={() => setIsImageModalOpen(false)} className="relative z-50">
-                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" aria-hidden="true" />
                 
                 <div className="fixed inset-0 flex items-center justify-center p-4">
-                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700">
+                    <DialogPanel className="mx-auto max-w-4xl w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden">
                         <div className="relative">
                             <button
                                 onClick={() => setIsImageModalOpen(false)}
-                                className="absolute top-4 right-4 z-10 p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors"
+                                className="absolute top-4 right-4 z-10 p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all duration-300 hover:scale-110"
                             >
                                 <XMarkIcon className="w-6 h-6" />
                             </button>
                             <img
                                 src={imageUrl}
                                 alt="Disaster evidence"
-                                className="w-full h-auto max-h-[80vh] object-contain rounded-xl"
+                                className="w-full h-auto max-h-[80vh] object-contain rounded-2xl"
                             />
                         </div>
                     </DialogPanel>

@@ -163,8 +163,33 @@ export const GovernmentDashboard = () => {
       <section className="py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
+          {/* Statistics Section Header */}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+              Command Center Overview
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto transition-colors duration-300">
+              Real-time operational metrics and key performance indicators for disaster response coordination
+            </p>
+          </div>
+
           {/* --- Enhanced Statistics Cards with Better UX --- */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
+            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-red-300/50 dark:hover:border-red-500/50">
+              <div className="flex items-center justify-between mb-6">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-100/50 dark:bg-red-500/20 group-hover:scale-110 transition-transform duration-300">
+                  <ExclamationTriangleIcon className="w-8 h-8 text-red-600 dark:text-red-400" />
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-1">{disasters.filter(d => d.status === 'active').length}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Active Disasters</div>
+                </div>
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-500">
+                Requiring immediate attention
+              </div>
+            </div>
+
             <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-blue-300/50 dark:hover:border-blue-500/50">
               <div className="flex items-center justify-between mb-6">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100/50 dark:bg-blue-500/20 group-hover:scale-110 transition-transform duration-300">
@@ -207,6 +232,21 @@ export const GovernmentDashboard = () => {
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-500">
                 Available emergency resources
+              </div>
+            </div>
+
+            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-orange-300/50 dark:hover:border-orange-500/50">
+              <div className="flex items-center justify-between mb-6">
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange-100/50 dark:bg-orange-500/20 group-hover:scale-110 transition-transform duration-300">
+                  <ArrowPathIcon className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1">{tasks.filter(t => t.status !== 'completed').length}</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Pending Tasks</div>
+                </div>
+              </div>
+              <div className="text-sm text-gray-500 dark:text-gray-500">
+                Awaiting completion or assignment
               </div>
             </div>
           </div>
