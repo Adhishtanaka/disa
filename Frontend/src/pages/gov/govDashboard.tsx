@@ -1,6 +1,25 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
-import { ArrowPathIcon, ExclamationTriangleIcon, PlusIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ExclamationTriangleIcon, PlusIcon, DocumentTextIcon, ChartBarIcon, MapIcon, ClockIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { 
+  AreaChart, 
+  Area, 
+  BarChart, 
+  Bar, 
+  LineChart, 
+  Line, 
+  PieChart, 
+  Pie, 
+  Cell, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  RadialBarChart,
+  RadialBar
+} from 'recharts';
 import { appwriteService } from '../../services/appwrite';
 import type { Disaster, DisasterStatus, UrgencyLevel } from '../../types/disaster';
 import type { TaskDocument, ResourceDocument } from '../../services/appwrite';
@@ -89,12 +108,83 @@ export const GovernmentDashboard = () => {
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(t => t.status === 'completed').length;
   const totalResources = resources.length;
+  
   // Group resources by type (if type field exists)
   const resourceTypeCounts: Record<string, number> = {};
   resources.forEach(r => {
     const type = typeof r.type === 'string' ? r.type : 'Unknown';
     resourceTypeCounts[type] = (resourceTypeCounts[type] || 0) + 1;
   });
+
+  // Analytics Data Preparation
+  const disastersByType = disasters.reduce((acc, disaster) => {
+    const type = disaster.emergency_type || 'Unknown';
+    acc[type] = (acc[type] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const disastersByUrgency = disasters.reduce((acc, disaster) => {
+    const urgency = disaster.urgency_level || 'unknown';
+    acc[urgency] = (acc[urgency] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const disastersByStatus = disasters.reduce((acc, disaster) => {
+    const status = disaster.status || 'unknown';
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  // Chart Data
+  const disasterTypeData = Object.entries(disastersByType).map(([type, count]) => ({
+    name: type.charAt(0).toUpperCase() + type.slice(1),
+    value: count,
+    disasters: count
+  }));
+
+  const urgencyData = Object.entries(disastersByUrgency).map(([urgency, count]) => ({
+    name: urgency.charAt(0).toUpperCase() + urgency.slice(1),
+    value: count,
+    disasters: count
+  }));
+
+  const statusData = Object.entries(disastersByStatus).map(([status, count]) => ({
+    name: status.charAt(0).toUpperCase() + status.slice(1),
+    value: count,
+    disasters: count
+  }));
+
+  const resourceData = Object.entries(resourceTypeCounts).map(([type, count]) => ({
+    name: type,
+    value: count,
+    resources: count
+  }));
+
+  const taskStatusData = [
+    { name: 'Completed', value: completedTasks, color: '#10b981' },
+    { name: 'Pending', value: tasks.filter(t => t.status !== 'completed').length, color: '#f59e0b' },
+    { name: 'In Progress', value: tasks.filter(t => t.status === 'in_progress').length, color: '#3b82f6' }
+  ];
+
+  // Time series data (mock data for demonstration)
+  const timeSeriesData = [
+    { month: 'Jan', disasters: 12, tasks: 45, resources: 23 },
+    { month: 'Feb', disasters: 8, tasks: 38, resources: 28 },
+    { month: 'Mar', disasters: 15, tasks: 52, resources: 31 },
+    { month: 'Apr', disasters: 10, tasks: 41, resources: 27 },
+    { month: 'May', disasters: 18, tasks: 58, resources: 35 },
+    { month: 'Jun', disasters: 14, tasks: 49, resources: 32 }
+  ];
+
+  // Color schemes
+  const COLORS = {
+    primary: ['#3b82f6', '#1d4ed8', '#1e40af', '#1e3a8a'],
+    danger: ['#ef4444', '#dc2626', '#b91c1c', '#991b1b'],
+    warning: ['#f59e0b', '#d97706', '#b45309', '#92400e'],
+    success: ['#10b981', '#059669', '#047857', '#065f46'],
+    purple: ['#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6'],
+    mixed: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#06b6d4']
+  };
 
   const handleDisasterItemClick = (disaster: Disaster) => {
     if (mapRef.current && disaster.latitude && disaster.longitude) {
@@ -250,6 +340,273 @@ export const GovernmentDashboard = () => {
               </div>
             </div>
           </div>
+
+          {/* Analytics Dashboard Section */}
+          <div className="mb-16">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 transition-colors duration-300">
+                Analytical Dashboard
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto transition-colors duration-300">
+                Advanced data visualization and statistical insights for strategic decision making
+              </p>
+            </div>
+
+            {/* Charts Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+              
+              {/* Disaster Types Distribution - Pie Chart */}
+              <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Disaster Types Distribution</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Breakdown by emergency type</p>
+                  </div>
+                  <ChartBarIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={disasterTypeData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {disasterTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS.mixed[index % COLORS.mixed.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Urgency Levels - Radial Bar Chart */}
+              <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Urgency Levels</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Priority distribution</p>
+                  </div>
+                  <ExclamationTriangleIcon className="w-8 h-8 text-red-600 dark:text-red-400" />
+                </div>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadialBarChart cx="50%" cy="50%" innerRadius="10%" outerRadius="80%" barSize={10} data={urgencyData}>
+                      <RadialBar
+                        label={{ position: 'insideStart', fill: '#fff' }}
+                        background
+                        dataKey="value"
+                        fill="#8884d8"
+                      />
+                      <Tooltip />
+                      <Legend />
+                    </RadialBarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Task Status Distribution - Bar Chart */}
+              <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Task Status Overview</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Current task distribution</p>
+                  </div>
+                  <UserGroupIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={taskStatusData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                        {taskStatusData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Resources Distribution - Pie Chart */}
+              <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Resource Allocation</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Available resources by type</p>
+                  </div>
+                  <MapIcon className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div className="h-80">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={resourceData}
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, value }) => `${name}: ${value}`}
+                      >
+                        {resourceData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS.purple[index % COLORS.purple.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            {/* Time Series Analytics */}
+            <div className="grid grid-cols-1 gap-8 mb-12">
+              
+              {/* Trend Analysis - Area Chart */}
+              <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">6-Month Trend Analysis</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Historical data trends for disasters, tasks, and resources</p>
+                  </div>
+                  <ClockIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={timeSeriesData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Area
+                        type="monotone"
+                        dataKey="disasters"
+                        stackId="1"
+                        stroke="#ef4444"
+                        fill="#ef4444"
+                        fillOpacity={0.6}
+                        name="Disasters"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="tasks"
+                        stackId="1"
+                        stroke="#3b82f6"
+                        fill="#3b82f6"
+                        fillOpacity={0.6}
+                        name="Tasks"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="resources"
+                        stackId="1"
+                        stroke="#10b981"
+                        fill="#10b981"
+                        fillOpacity={0.6}
+                        name="Resources"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Performance Metrics - Line Chart */}
+              <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Performance Metrics</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">Monthly performance indicators and response efficiency</p>
+                  </div>
+                  <ChartBarIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="h-96">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={timeSeriesData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line
+                        type="monotone"
+                        dataKey="disasters"
+                        stroke="#ef4444"
+                        strokeWidth={3}
+                        name="Active Disasters"
+                        dot={{ fill: '#ef4444', strokeWidth: 2, r: 6 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="tasks"
+                        stroke="#3b82f6"
+                        strokeWidth={3}
+                        name="Completed Tasks"
+                        dot={{ fill: '#3b82f6', strokeWidth: 2, r: 6 }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="resources"
+                        stroke="#10b981"
+                        strokeWidth={3}
+                        name="Deployed Resources"
+                        dot={{ fill: '#10b981', strokeWidth: 2, r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            {/* Key Performance Indicators */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                  {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}%
+                </div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Task Completion Rate</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Operational Efficiency</div>
+              </div>
+              
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+                <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
+                  {disasters.filter(d => d.urgency_level === 'high').length}
+                </div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">High Priority</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Critical Situations</div>
+              </div>
+              
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+                <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
+                  {Math.round((totalResources / Math.max(disasters.length, 1)) * 10) / 10}
+                </div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Resources per Disaster</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Resource Allocation</div>
+              </div>
+              
+              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                  {disasters.filter(d => d.status === 'active').length + disasters.filter(d => d.status === 'pending').length}
+                </div>
+                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Active Operations</div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">Current Workload</div>
+              </div>
+            </div>
+          </div>
+
           {/* Enhanced World Map Section */}
           <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-blue-300/50 dark:hover:border-blue-500/50">
             <div className="flex justify-between items-center mb-8">
