@@ -31,6 +31,8 @@ import { FirstResponderAnalytics } from './pages/fr/frAnalytics';
 import Navbar from './components/auth/Navbar';
 import Footer from './components/public/Footer';
 import { ThemeProvider } from './contexts/ThemeContext';
+import NotificationWidget from './components/widgets/NotificationWidget';
+import SettingsWidget from './components/widgets/SettingsWidget';
 
 function App() {
   
@@ -172,6 +174,19 @@ function App() {
           <SignUp />
         </AuthRoute>
       } />
+
+      {/* Widget Routes - Accessible to all authenticated users */}
+      <Route path="/widgets/notifications" element={
+        <PrivateRoute>
+          <NotificationWidget />
+        </PrivateRoute>
+      } />
+      <Route path="/widgets/settings" element={
+        <PrivateRoute>
+          <SettingsWidget />
+        </PrivateRoute>
+      } />
+
             <Route path="/unauthorized" element={<Unauthorized />} />
                   <Route path="/" element={<Navigate to="/public" replace />} />
       <Route path="*" element={<Navigate to="/public" replace />} />

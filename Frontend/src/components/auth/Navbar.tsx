@@ -335,7 +335,8 @@ const Navbar: React.FC = () => {
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
                   </Link>
                 )}
-                <button 
+                <Link 
+                  to="/widgets/notifications"
                   className="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 relative group py-1" 
                   title="Notifications"
                 >
@@ -346,8 +347,9 @@ const Navbar: React.FC = () => {
                   </svg>
                   <span className="text-xs font-medium">Notifications</span>
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
-                </button>
-                <button 
+                </Link>
+                <Link 
+                  to="/widgets/settings"
                   className="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 relative group py-1" 
                   title="Settings"
                 >
@@ -357,7 +359,7 @@ const Navbar: React.FC = () => {
                   </svg>
                   <span className="text-xs font-medium">Settings</span>
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 transition-all duration-300 group-hover:w-full"></span>
-                </button>
+                </Link>
                 <button 
                   onClick={toggleTheme}
                   className="flex flex-col items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-200 relative group py-1" 
