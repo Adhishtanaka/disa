@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router';
-import { ArrowPathIcon, ExclamationTriangleIcon, PlusIcon, DocumentTextIcon, ChartBarIcon, MapIcon, ClockIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ExclamationTriangleIcon, PlusIcon, DocumentTextIcon, ChartBarIcon, MapIcon, ClockIcon, UserGroupIcon, TruckIcon } from '@heroicons/react/24/outline';
 import { 
   AreaChart, 
   Area, 
@@ -24,6 +24,16 @@ import { appwriteService } from '../../services/appwrite';
 import type { Disaster, DisasterStatus, UrgencyLevel } from '../../types/disaster';
 import type { TaskDocument, ResourceDocument } from '../../services/appwrite';
 import { WorldMap } from '../../components/private/WorldMap';
+
+// Chart color schemes
+const COLORS = {
+  blue: ['#3b82f6', '#1d4ed8', '#1e40af', '#1e3a8a'],
+  red: ['#ef4444', '#dc2626', '#b91c1c', '#991b1b'],
+  green: ['#10b981', '#059669', '#047857', '#065f46'],
+  purple: ['#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6'],
+  orange: ['#f59e0b', '#d97706', '#b45309', '#92400e'],
+  mixed: ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4', '#84cc16']
+};
 
 export const GovernmentDashboard = () => {
   const [disasters, setDisasters] = useState<Disaster[]>([]);
@@ -129,12 +139,6 @@ export const GovernmentDashboard = () => {
     return acc;
   }, {} as Record<string, number>);
 
-  const disastersByStatus = disasters.reduce((acc, disaster) => {
-    const status = disaster.status || 'unknown';
-    acc[status] = (acc[status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
   // Chart Data
   const disasterTypeData = Object.entries(disastersByType).map(([type, count]) => ({
     name: type.charAt(0).toUpperCase() + type.slice(1),
@@ -144,12 +148,6 @@ export const GovernmentDashboard = () => {
 
   const urgencyData = Object.entries(disastersByUrgency).map(([urgency, count]) => ({
     name: urgency.charAt(0).toUpperCase() + urgency.slice(1),
-    value: count,
-    disasters: count
-  }));
-
-  const statusData = Object.entries(disastersByStatus).map(([status, count]) => ({
-    name: status.charAt(0).toUpperCase() + status.slice(1),
     value: count,
     disasters: count
   }));
@@ -176,15 +174,22 @@ export const GovernmentDashboard = () => {
     { month: 'Jun', disasters: 14, tasks: 49, resources: 32 }
   ];
 
-  // Color schemes
-  const COLORS = {
-    primary: ['#3b82f6', '#1d4ed8', '#1e40af', '#1e3a8a'],
-    danger: ['#ef4444', '#dc2626', '#b91c1c', '#991b1b'],
-    warning: ['#f59e0b', '#d97706', '#b45309', '#92400e'],
-    success: ['#10b981', '#059669', '#047857', '#065f46'],
-    purple: ['#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6'],
-    mixed: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#06b6d4']
-  };
+  // Resource deployment data for analytics
+  const resourceDeploymentData = [
+    { resource: 'Emergency Vehicles', deployed: 28, available: 12, total: 40 },
+    { resource: 'Medical Units', deployed: 22, available: 8, total: 30 },
+    { resource: 'Rescue Teams', deployed: 45, available: 15, total: 60 },
+    { resource: 'Support Staff', deployed: 89, available: 31, total: 120 },
+  ];
+
+  // Incident type analysis data
+  const incidentTypeAnalysis = [
+    { type: 'Fire', count: 52, avgResponseTime: 6.8, severity: 'high' },
+    { type: 'Medical', count: 89, avgResponseTime: 5.2, severity: 'medium' },
+    { type: 'Accident', count: 41, avgResponseTime: 8.7, severity: 'high' },
+    { type: 'Rescue', count: 28, avgResponseTime: 11.9, severity: 'high' },
+    { type: 'Natural', count: 15, avgResponseTime: 14.8, severity: 'critical' },
+  ];
 
   const handleDisasterItemClick = (disaster: Disaster) => {
     if (mapRef.current && disaster.latitude && disaster.longitude) {
@@ -263,80 +268,73 @@ export const GovernmentDashboard = () => {
             </p>
           </div>
 
-          {/* --- Enhanced Statistics Cards with Better UX --- */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-12">
-            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-red-300/50 dark:hover:border-red-500/50">
-              <div className="flex items-center justify-between mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-100/50 dark:bg-red-500/20 group-hover:scale-110 transition-transform duration-300">
-                  <ExclamationTriangleIcon className="w-8 h-8 text-red-600 dark:text-red-400" />
+          {/* Enhanced Statistics Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 mb-12">
+            <div className="group bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105">
+              <div className="flex items-center justify-between mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100/50 dark:bg-red-500/20">
+                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-1">{disasters.filter(d => d.status === 'active').length}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Active Disasters</div>
+                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">{disasters.filter(d => d.status === 'active').length}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">Critical</div>
                 </div>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-500">
-                Requiring immediate attention
+              <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Active Disasters</div>
+              <div className="text-xs text-gray-500 dark:text-gray-500">Requiring immediate attention</div>
+              <div className="mt-3 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="bg-red-500 h-2 rounded-full" style={{width: `${Math.min((disasters.filter(d => d.status === 'active').length / Math.max(disasters.length, 1)) * 100, 100)}%`}}></div>
               </div>
             </div>
 
-            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-blue-300/50 dark:hover:border-blue-500/50">
-              <div className="flex items-center justify-between mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-100/50 dark:bg-blue-500/20 group-hover:scale-110 transition-transform duration-300">
-                  <DocumentTextIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div className="group bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105">
+              <div className="flex items-center justify-between mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100/50 dark:bg-blue-500/20">
+                  <DocumentTextIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">{totalTasks}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Total Tasks</div>
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{totalTasks}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">Total</div>
                 </div>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-500">
-                Managing {totalTasks} operational tasks
+              <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Operational Tasks</div>
+              <div className="text-xs text-gray-500 dark:text-gray-500">Managing {totalTasks} tasks</div>
+              <div className="mt-3 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="bg-blue-500 h-2 rounded-full" style={{width: '85%'}}></div>
               </div>
             </div>
             
-            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-green-300/50 dark:hover:border-green-500/50">
-              <div className="flex items-center justify-between mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-100/50 dark:bg-green-500/20 group-hover:scale-110 transition-transform duration-300">
-                  <ArrowPathIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <div className="group bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105">
+              <div className="flex items-center justify-between mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100/50 dark:bg-green-500/20">
+                  <ArrowPathIcon className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">{completedTasks}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Completed</div>
+                  <div className="text-2xl font-bold text-green-600 dark:text-green-400">{totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}%</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">Rate</div>
                 </div>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-500">
-                {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}% completion rate
+              <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Task Completion</div>
+              <div className="text-xs text-gray-500 dark:text-gray-500">{completedTasks} of {totalTasks} completed</div>
+              <div className="mt-3 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="bg-green-500 h-2 rounded-full" style={{width: `${totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0}%`}}></div>
               </div>
             </div>
             
-            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-purple-300/50 dark:hover:border-purple-500/50">
-              <div className="flex items-center justify-between mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-purple-100/50 dark:bg-purple-500/20 group-hover:scale-110 transition-transform duration-300">
-                  <PlusIcon className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+            <div className="group bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105">
+              <div className="flex items-center justify-between mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-100/50 dark:bg-purple-500/20">
+                  <PlusIcon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">{totalResources}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Resources</div>
+                  <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{totalResources}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">Available</div>
                 </div>
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-500">
-                Available emergency resources
-              </div>
-            </div>
-
-            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-orange-300/50 dark:hover:border-orange-500/50">
-              <div className="flex items-center justify-between mb-6">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-orange-100/50 dark:bg-orange-500/20 group-hover:scale-110 transition-transform duration-300">
-                  <ArrowPathIcon className="w-8 h-8 text-orange-600 dark:text-orange-400" />
-                </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1">{tasks.filter(t => t.status !== 'completed').length}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Pending Tasks</div>
-                </div>
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-500">
-                Awaiting completion or assignment
+              <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Emergency Resources</div>
+              <div className="text-xs text-gray-500 dark:text-gray-500">Ready for deployment</div>
+              <div className="mt-3 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                <div className="bg-purple-500 h-2 rounded-full" style={{width: '92%'}}></div>
               </div>
             </div>
           </div>
@@ -352,17 +350,19 @@ export const GovernmentDashboard = () => {
               </p>
             </div>
 
-            {/* Charts Grid */}
+            {/* Enhanced Charts Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
               
               {/* Disaster Types Distribution - Pie Chart */}
               <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Disaster Types Distribution</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                      <ChartBarIcon className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+                      Disaster Types Distribution
+                    </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Breakdown by emergency type</p>
                   </div>
-                  <ChartBarIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
@@ -372,16 +372,23 @@ export const GovernmentDashboard = () => {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {disasterTypeData.map((entry, index) => (
+                        {disasterTypeData.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS.mixed[index % COLORS.mixed.length]} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: '#1F2937',
+                          border: '1px solid #374151',
+                          borderRadius: '8px',
+                          color: '#F9FAFB'
+                        }}
+                      />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -392,10 +399,12 @@ export const GovernmentDashboard = () => {
               <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Urgency Levels</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                      <ExclamationTriangleIcon className="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
+                      Urgency Levels
+                    </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Priority distribution</p>
                   </div>
-                  <ExclamationTriangleIcon className="w-8 h-8 text-red-600 dark:text-red-400" />
                 </div>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
@@ -406,7 +415,14 @@ export const GovernmentDashboard = () => {
                         dataKey="value"
                         fill="#8884d8"
                       />
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: '#1F2937',
+                          border: '1px solid #374151',
+                          borderRadius: '8px',
+                          color: '#F9FAFB'
+                        }}
+                      />
                       <Legend />
                     </RadialBarChart>
                   </ResponsiveContainer>
@@ -417,18 +433,27 @@ export const GovernmentDashboard = () => {
               <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Task Status Overview</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                      <UserGroupIcon className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
+                      Task Status Overview
+                    </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Current task distribution</p>
                   </div>
-                  <UserGroupIcon className="w-8 h-8 text-green-600 dark:text-green-400" />
                 </div>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={taskStatusData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                      <XAxis dataKey="name" stroke="#6B7280" fontSize={12} />
+                      <YAxis stroke="#6B7280" fontSize={12} />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: '#1F2937',
+                          border: '1px solid #374151',
+                          borderRadius: '8px',
+                          color: '#F9FAFB'
+                        }}
+                      />
                       <Bar dataKey="value" radius={[4, 4, 0, 0]}>
                         {taskStatusData.map((entry, index) => (
                           <Cell key={`cell-${index}`} fill={entry.color} />
@@ -443,10 +468,12 @@ export const GovernmentDashboard = () => {
               <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Resource Allocation</h3>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                      <MapIcon className="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" />
+                      Resource Allocation
+                    </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Available resources by type</p>
                   </div>
-                  <MapIcon className="w-8 h-8 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div className="h-80">
                   <ResponsiveContainer width="100%" height="100%">
@@ -460,11 +487,18 @@ export const GovernmentDashboard = () => {
                         dataKey="value"
                         label={({ name, value }) => `${name}: ${value}`}
                       >
-                        {resourceData.map((entry, index) => (
+                        {resourceData.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS.purple[index % COLORS.purple.length]} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: '#1F2937',
+                          border: '1px solid #374151',
+                          borderRadius: '8px',
+                          color: '#F9FAFB'
+                        }}
+                      />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -472,25 +506,48 @@ export const GovernmentDashboard = () => {
               </div>
             </div>
 
-            {/* Time Series Analytics */}
+            {/* Enhanced Time Series Analytics */}
             <div className="grid grid-cols-1 gap-8 mb-12">
               
               {/* Trend Analysis - Area Chart */}
               <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.01]">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">6-Month Trend Analysis</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Historical data trends for disasters, tasks, and resources</p>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center">
+                      <ClockIcon className="w-6 h-6 mr-3 text-blue-600 dark:text-blue-400" />
+                      6-Month Trend Analysis
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400">Historical data trends for disasters, tasks, and resources</p>
                   </div>
-                  <ClockIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Disasters</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Tasks</span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Resources</span>
+                    </div>
+                  </div>
                 </div>
                 <div className="h-96">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={timeSeriesData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                      <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
+                      <YAxis stroke="#6B7280" fontSize={12} />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: '#1F2937',
+                          border: '1px solid #374151',
+                          borderRadius: '8px',
+                          color: '#F9FAFB'
+                        }}
+                      />
                       <Legend />
                       <Area
                         type="monotone"
@@ -568,41 +625,6 @@ export const GovernmentDashboard = () => {
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
-            </div>
-
-            {/* Key Performance Indicators */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                  {totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0}%
-                </div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Task Completion Rate</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Operational Efficiency</div>
-              </div>
-              
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-                <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
-                  {disasters.filter(d => d.urgency_level === 'high').length}
-                </div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">High Priority</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Critical Situations</div>
-              </div>
-              
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
-                  {Math.round((totalResources / Math.max(disasters.length, 1)) * 10) / 10}
-                </div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Resources per Disaster</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Resource Allocation</div>
-              </div>
-              
-              <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 text-center hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-                  {disasters.filter(d => d.status === 'active').length + disasters.filter(d => d.status === 'pending').length}
-                </div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Active Operations</div>
-                <div className="text-xs text-gray-600 dark:text-gray-400">Current Workload</div>
               </div>
             </div>
           </div>
@@ -779,6 +801,124 @@ export const GovernmentDashboard = () => {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Resource Deployment Analytics */}
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <TruckIcon className="w-6 h-6 mr-3 text-orange-600 dark:text-orange-400" />
+                  Resource Deployment Status
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">Real-time allocation of government emergency resources</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Deployed</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Available</span>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {resourceDeploymentData.map((resource, index) => (
+                <div key={index} className="bg-white/30 dark:bg-gray-800/30 rounded-xl p-6 border border-gray-200/30 dark:border-gray-700/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-gray-900 dark:text-white">{resource.resource}</h4>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-gray-900 dark:text-white">{resource.total}</div>
+                      <div className="text-xs text-gray-500">Total</div>
+                    </div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Deployed</span>
+                      <span className="text-sm font-medium text-red-600 dark:text-red-400">{resource.deployed}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Available</span>
+                      <span className="text-sm font-medium text-green-600 dark:text-green-400">{resource.available}</span>
+                    </div>
+                    <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                      <div 
+                        className="bg-red-500 h-3 rounded-full transition-all duration-500" 
+                        style={{width: `${(resource.deployed / resource.total) * 100}%`}}
+                      ></div>
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500">
+                      {Math.round((resource.deployed / resource.total) * 100)}% utilization
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Incident Type Analysis */}
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <DocumentTextIcon className="w-6 h-6 mr-3 text-emerald-600 dark:text-emerald-400" />
+                  Incident Type Performance Analysis
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">Detailed breakdown of response efficiency by incident type</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-4 px-4 font-semibold text-gray-900 dark:text-white">Incident Type</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Count</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Avg Response Time</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Severity</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Performance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {incidentTypeAnalysis.map((incident, index) => (
+                    <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
+                      <td className="py-4 px-4">
+                        <div className="font-medium text-gray-900 dark:text-white">{incident.type}</div>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-sm font-medium">
+                          {incident.count}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-gray-900 dark:text-white font-medium">{incident.avgResponseTime} min</span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                          incident.severity === 'critical' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' :
+                          incident.severity === 'high' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' :
+                          'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                        }`}>
+                          {incident.severity.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              incident.avgResponseTime < 8 ? 'bg-green-500' :
+                              incident.avgResponseTime < 12 ? 'bg-yellow-500' : 'bg-red-500'
+                            }`}
+                            style={{width: `${Math.max(20, 100 - (incident.avgResponseTime * 5))}%`}}
+                          ></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

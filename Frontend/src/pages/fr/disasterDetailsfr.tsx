@@ -17,12 +17,7 @@ import {
     HeartIcon,
     UsersIcon,
     DocumentTextIcon,
-    ArrowPathIcon,
-    ChartBarIcon,
-    MapIcon,
-    FireIcon,
-    ClockIcon as TimeIcon,
-    CheckBadgeIcon
+    ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { Disclosure, DisclosureButton, DisclosurePanel, Dialog, DialogPanel } from '@headlessui/react';
 import ReactMarkdown from 'react-markdown';

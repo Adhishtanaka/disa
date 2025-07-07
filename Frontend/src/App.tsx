@@ -27,6 +27,7 @@ import { VolAnalytics } from './pages/vol/volAnalytics';
 import { DisasterDetailsVol } from './pages/vol/disasterDetailsvol';
 import { FirstRespondersDashboard } from './pages/fr/frdashboard';
 import { DisasterDetailsFr } from './pages/fr/disasterDetailsfr';
+import { FirstResponderAnalytics } from './pages/fr/frAnalytics';
 import Navbar from './components/auth/Navbar';
 import Footer from './components/public/Footer';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -143,6 +144,13 @@ function App() {
       <Route path="/fr/" element={
         <FirstResponderRoute>
           <FirstRespondersDashboard />
+        </FirstResponderRoute>
+      } />
+
+      {/* First Responder Analytics Route */}
+      <Route path="/fr/analytics" element={
+        <FirstResponderRoute>
+          <FirstResponderAnalytics />
         </FirstResponderRoute>
       } />
 
