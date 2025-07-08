@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router';
 import { 
   ArrowPathIcon, 
   ExclamationTriangleIcon,
@@ -13,8 +12,7 @@ import {
   CalendarDaysIcon
 } from '@heroicons/react/24/outline';
 import { appwriteService } from '../../services/appwrite';
-import type { Disaster, DisasterStatus, UrgencyLevel } from '../../types/disaster';
-import { WorldMap } from '../../components/private/WorldMap';
+import type { Disaster } from '../../types/disaster';
 import { 
   AreaChart, 
   Area, 
@@ -33,7 +31,7 @@ import {
   Legend
 } from 'recharts';
 
-export const FirstRespondersDashboard = () => {
+export const FirstResponderAnalytics = () => {
   const [disasters, setDisasters] = useState<Disaster[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +55,6 @@ export const FirstRespondersDashboard = () => {
     fetchDisasters();
   }, []);
 
-  const filteredDisasters = disasters.filter(disaster => disaster.status === 'active');
 
   // Analytics Data Generation
   const responseTimeData = [
@@ -110,23 +107,22 @@ export const FirstRespondersDashboard = () => {
     { resource: 'Medical Staff', deployed: 67, available: 23, total: 90 },
   ];
 
-  const getStatusColor = (status: DisasterStatus): string => {
-    switch (status) {
-      case 'active': return 'text-red-600 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800';
-      case 'pending': return 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800';
-      case 'archived': return 'text-green-600 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800';
-      default: return 'text-gray-600 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700';
-    }
-  };
+  const monthlyTrendData = [
+    { month: 'Jan', responses: 145, efficiency: 85, satisfaction: 92 },
+    { month: 'Feb', responses: 128, efficiency: 88, satisfaction: 89 },
+    { month: 'Mar', responses: 167, efficiency: 82, satisfaction: 94 },
+    { month: 'Apr', responses: 189, efficiency: 90, satisfaction: 91 },
+    { month: 'May', responses: 203, efficiency: 87, satisfaction: 93 },
+    { month: 'Jun', responses: 176, efficiency: 91, satisfaction: 95 },
+  ];
 
-  const getUrgencyColor = (urgency: UrgencyLevel): string => {
-    switch (urgency) {
-      case 'high': return 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400';
-      case 'medium': return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400';
-      case 'low': return 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400';
-      default: return 'text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400';
-    }
-  };
+  const incidentTypeAnalysis = [
+    { type: 'Fire', count: 45, avgResponseTime: 7.2, severity: 'high' },
+    { type: 'Medical', count: 78, avgResponseTime: 5.8, severity: 'medium' },
+    { type: 'Accident', count: 34, avgResponseTime: 9.1, severity: 'high' },
+    { type: 'Rescue', count: 23, avgResponseTime: 12.5, severity: 'high' },
+    { type: 'Natural', count: 12, avgResponseTime: 15.3, severity: 'critical' },
+  ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
@@ -152,18 +148,18 @@ export const FirstRespondersDashboard = () => {
           <div className="text-center mb-12">
             <div className="mb-8">
               <span className="inline-block px-4 py-2 bg-red-500/20 text-red-600 dark:text-red-300 rounded-full text-sm font-medium border border-red-500/30 transition-colors duration-300">
-                🚨 First Responder Operations
+                📊 Emergency Response Analytics
               </span>
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight">
-              Emergency Response
+              Response Analytics
               <span className="block bg-gradient-to-r from-red-500 to-red-700 dark:from-red-400 dark:to-red-600 bg-clip-text text-transparent">
                 Command Center
               </span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed transition-colors duration-300">
-              Rapid response coordination for emergency situations. Access real-time disaster data, 
-              deploy resources, and coordinate with response teams in critical scenarios
+              Comprehensive data insights and performance metrics for emergency response operations. 
+              Monitor efficiency, track resources, and analyze response patterns in real-time
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
@@ -172,41 +168,37 @@ export const FirstRespondersDashboard = () => {
                 className="group bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg text-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center"
               >
                 <ArrowPathIcon className={`w-5 h-5 mr-2 transform group-hover:rotate-180 transition-transform duration-500 ${loading ? 'animate-spin' : ''}`} />
-                Refresh Status
+                Refresh Analytics
               </button>
-              <Link
-                to="/fr/disaster/1"
-                className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-8 py-4 rounded-lg text-lg font-medium transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500"
-              >
-                Emergency Details
-              </Link>
+              <button className="border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-8 py-4 rounded-lg text-lg font-medium transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 flex items-center justify-center">
+                <ChartBarIcon className="w-5 h-5 mr-2" />
+                Export Report
+              </button>
             </div>
           </div>
         </div>
       </section>
       
-      {/* Main Content */}
+      {/* Main Analytics Content */}
       <section className="py-16 bg-white dark:bg-gray-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Statistics Card */}
-          <div className="mb-12">
-            <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105 hover:border-red-300/50 dark:hover:border-red-500/50">
-              <div className="flex items-center justify-between">
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-100/50 dark:bg-red-500/20 group-hover:scale-110 transition-transform duration-300">
-                  <DocumentTextIcon className="w-8 h-8 text-red-600 dark:text-red-400" />
+          
+          {/* Error Message */}
+          {error && (
+            <div className="group relative bg-red-50/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-700/50 rounded-xl p-6 mb-8 shadow-sm hover:bg-red-50/70 dark:hover:bg-red-900/30 transition-all duration-300">
+              <div className="flex items-start">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 mr-4 group-hover:scale-110 transition-transform duration-300">
+                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-1">{filteredDisasters.length}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">Critical Situations</div>
+                <div>
+                  <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-1">System Alert</h3>
+                  <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
                 </div>
-              </div>
-              <div className="mt-4 text-sm text-gray-500 dark:text-gray-500">
-                Requiring immediate response attention
               </div>
             </div>
-          </div>
+          )}
 
-          {/* Emergency Response Analytics Grid */}
+          {/* Key Performance Indicators */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-8 mb-12">
             {/* Response Time Metrics */}
             <div className="group bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-6 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-105">
@@ -280,135 +272,6 @@ export const FirstRespondersDashboard = () => {
               </div>
             </div>
           </div>
-
-          
-          {/* Enhanced World Map Section */}
-          <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-red-300/50 dark:hover:border-red-500/50">
-            <div className="flex justify-between items-center mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Emergency Response Map</h2>
-                <p className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                  Real-time deployment of emergency response teams
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-red-600 dark:text-red-400">{filteredDisasters.length}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">Active Zones</div>
-              </div>
-            </div>
-            {loading ? (
-              <div className="h-96 bg-gray-100/50 dark:bg-gray-900/50 rounded-lg animate-pulse flex items-center justify-center transition-colors duration-300">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 dark:bg-red-500/20 mb-4">
-                    <ArrowPathIcon className="w-6 h-6 text-red-600 dark:text-red-400 animate-spin" />
-                  </div>
-                  <div className="text-gray-600 dark:text-gray-400">Loading emergency map...</div>
-                </div>
-              </div>
-            ) : (
-              <div className="relative rounded-lg overflow-hidden">
-                <WorldMap disasters={filteredDisasters} activeTab={"active"} />
-              </div>
-            )}
-          </div>
-
-          {/* Error Message with Enhanced UX */}
-          {error && (
-            <div className="group relative bg-red-50/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-700/50 rounded-xl p-6 mb-8 shadow-sm hover:bg-red-50/70 dark:hover:bg-red-900/30 transition-all duration-300">
-              <div className="flex items-start">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 mr-4 group-hover:scale-110 transition-transform duration-300">
-                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-1">System Alert</h3>
-                  <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Enhanced Emergency Response List */}
-          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-lg overflow-hidden hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-            <div className="border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Critical Situations</h2>
-              <p className="text-gray-600 dark:text-gray-400">Emergency situations requiring immediate response</p>
-            </div>
-            <div className="p-8">
-              {loading ? (
-                <div className="space-y-6">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 animate-pulse bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm transition-colors duration-300">
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="space-y-3">
-                          <div className="h-5 bg-gray-300/50 dark:bg-gray-700/50 rounded w-48"></div>
-                          <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-32"></div>
-                        </div>
-                        <div className="h-8 bg-gray-300/50 dark:bg-gray-700/50 rounded w-20"></div>
-                      </div>
-                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-full mb-2"></div>
-                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-3/4"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : filteredDisasters.length === 0 ? (
-                <div className="text-center py-20">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700/50 mb-6">
-                    <ExclamationTriangleIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3">No critical situations</h3>
-                  <p className="text-gray-600 dark:text-gray-400">All emergency situations are under control.</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {filteredDisasters.map((disaster) => (
-                    <div
-                      key={disaster.$id}
-                      className="group relative border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] hover:border-red-300/50 dark:hover:border-red-500/50"
-                    >
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-4 mb-4">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white capitalize group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300">
-                              {disaster.emergency_type} Emergency
-                            </h3>
-                            <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${getUrgencyColor(disaster.urgency_level)}`}>
-                              {disaster.urgency_level?.toUpperCase()}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed transition-colors duration-300">{disaster.situation}</p>
-                          <div className="flex items-center gap-6 text-sm">
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border transition-all duration-300 ${getStatusColor(disaster.status)}`}>
-                              {disaster.status.toUpperCase()}
-                            </span>
-                            <span className="text-gray-500 dark:text-gray-500">
-                              📅 {new Date(disaster.submitted_time * 1000).toLocaleDateString()}
-                            </span>
-                            {disaster.latitude && disaster.longitude && (
-                              <span className="text-gray-500 dark:text-gray-500">
-                                📍 {disaster.latitude.toFixed(3)}, {disaster.longitude.toFixed(3)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Enhanced Action Buttons */}
-                      <div className="flex gap-4 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
-                        <Link
-                          to={`/fr/disaster/${disaster.$id}/`}
-                          className="group bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center"
-                        >
-                          <DocumentTextIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                          Emergency Response
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
 
           {/* Advanced Analytics Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -551,6 +414,40 @@ export const FirstRespondersDashboard = () => {
             </div>
           </div>
 
+          {/* Monthly Trends Analysis */}
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <ChartBarIcon className="w-6 h-6 mr-3 text-indigo-600 dark:text-indigo-400" />
+                  Monthly Performance Trends
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">Long-term analysis of response efficiency and satisfaction</p>
+              </div>
+            </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={monthlyTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+                  <XAxis dataKey="month" stroke="#6B7280" fontSize={12} />
+                  <YAxis stroke="#6B7280" fontSize={12} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1F2937',
+                      border: '1px solid #374151',
+                      borderRadius: '8px',
+                      color: '#F9FAFB'
+                    }}
+                  />
+                  <Legend />
+                  <Area type="monotone" dataKey="responses" stackId="1" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                  <Area type="monotone" dataKey="efficiency" stackId="2" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+                  <Area type="monotone" dataKey="satisfaction" stackId="3" stroke="#ffc658" fill="#ffc658" fillOpacity={0.6} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
           {/* Resource Deployment Analytics */}
           <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
             <div className="flex items-center justify-between mb-8">
@@ -606,8 +503,69 @@ export const FirstRespondersDashboard = () => {
             </div>
           </div>
 
+          {/* Incident Type Analysis */}
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                  <DocumentTextIcon className="w-6 h-6 mr-3 text-emerald-600 dark:text-emerald-400" />
+                  Incident Type Performance Analysis
+                </h3>
+                <p className="text-gray-600 dark:text-gray-400">Detailed breakdown of response efficiency by incident type</p>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 dark:border-gray-700">
+                    <th className="text-left py-4 px-4 font-semibold text-gray-900 dark:text-white">Incident Type</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Count</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Avg Response Time</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Severity</th>
+                    <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">Performance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {incidentTypeAnalysis.map((incident, index) => (
+                    <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200">
+                      <td className="py-4 px-4">
+                        <div className="font-medium text-gray-900 dark:text-white">{incident.type}</div>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded-full text-sm font-medium">
+                          {incident.count}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-gray-900 dark:text-white font-medium">{incident.avgResponseTime} min</span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                          incident.severity === 'critical' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' :
+                          incident.severity === 'high' ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-300' :
+                          'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                        }`}>
+                          {incident.severity.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-center">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full ${
+                              incident.avgResponseTime < 8 ? 'bg-green-500' :
+                              incident.avgResponseTime < 12 ? 'bg-yellow-500' : 'bg-red-500'
+                            }`}
+                            style={{width: `${Math.max(20, 100 - (incident.avgResponseTime * 5))}%`}}
+                          ></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-          
         </div>
       </section>
     </div>

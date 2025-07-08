@@ -68,11 +68,11 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
       case 'pending':
         return `${base} bg-yellow-100 text-yellow-800`;
       case 'complete':
-        return `${base} bg-green-100 text-green-800`;
+        return `${base} bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400`;
       case 'cancel':
-        return `${base} bg-red-100 text-red-800`;
+        return `${base} bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400`;
       default:
-        return `${base} bg-gray-100 text-gray-800`;
+        return `${base} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400`;
     }
   };
 
@@ -81,7 +81,7 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
       {loading ? (
         <div className="flex flex-col items-center justify-center mt-20">
           <svg className="animate-spin h-8 w-8 text-blue-500 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
-          <span className="text-gray-600 text-lg">Loading tasks...</span>
+          <span className="text-gray-600 dark:text-gray-300 text-lg">Loading tasks...</span>
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center mt-20">
@@ -89,14 +89,14 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
         </div>
       ) : tasks.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-20">
-          <span className="text-gray-500 text-lg">No tasks available</span>
+          <span className="text-gray-500 dark:text-gray-400 text-lg">No tasks available</span>
         </div>
       ) : (
         <ul className="space-y-3">
           {tasks.map((task) => (
             <li
               key={task.task_id}
-              className="flex items-start gap-3 p-3 border-l-4 border-blue-400 bg-white rounded-lg shadow-sm hover:shadow-md transition group"
+              className="flex items-start gap-3 p-3 border-l-4 border-blue-400 bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition group"
             >
               <div className="flex-shrink-0 mt-1">
                 <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
@@ -126,18 +126,18 @@ export default function TaskList({ disasterId, role }: TaskListProps) {
                       href={`https://www.google.com/maps?q=${task.latitude},${task.longitude}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 underline hover:text-blue-800 truncate"
+                      className="text-blue-600 dark:text-blue-400 underline hover:text-blue-800 dark:hover:text-blue-300 truncate"
                     >
                       Map
                     </a>
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-2">
-                  <label className="text-xs text-gray-500">Status:</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400">Status:</label>
                   <select
                     value={task.status}
                     onChange={(e) => handleStatusChange(task.task_id, e.target.value)}
-                    className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 bg-gray-50 text-gray-800 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="border border-gray-300 dark:border-gray-600 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-blue-400 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition disabled:opacity-60 disabled:cursor-not-allowed"
                     disabled={!!updating}
                     style={{ minWidth: 80 }}
                   >

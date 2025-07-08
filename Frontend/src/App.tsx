@@ -16,23 +16,34 @@ import UserDashboard from './pages/user/userDashbord';
 import Home from './pages/public/Home';
 import { DisasterDetailsUserPage } from './pages/user/disasterDetails';
 import { GovernmentDashboard } from './pages/gov/govDashboard';
+import GovAnalytics from './pages/gov/govAnalytics';
 import AddResourceComponent from './pages/gov/addResource';
 import { DisasterDetailsGovPage } from './pages/gov/disasterDetails';
 import AIMetricsPage from './pages/gov/aiMetrics';
 import { ReportDetailsPage } from './pages/gov/ReportDetailsPage';
 import CommunicationHub from './pages/communication/communicationHub';
 import { VolunteerDashboard } from './pages/vol/voldashboard';
+import { VolAnalytics } from './pages/vol/volAnalytics';
 import { DisasterDetailsVol } from './pages/vol/disasterDetailsvol';
 import { FirstRespondersDashboard } from './pages/fr/frdashboard';
 import { DisasterDetailsFr } from './pages/fr/disasterDetailsfr';
+import { FirstResponderAnalytics } from './pages/fr/frAnalytics';
 import Navbar from './components/auth/Navbar';
 import Footer from './components/public/Footer';
+import { ThemeProvider } from './contexts/ThemeContext';
+import NotificationWidget from './components/widgets/NotificationWidget';
+import SettingsWidget from './components/widgets/SettingsWidget';
 
 function App() {
   
   return (
-    <>
-    <Navbar />
+    <ThemeProvider>
+      <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
+        {/* Debug theme indicator */}
+        <div className="fixed top-0 left-0 z-50 bg-green-500 dark:bg-red-500 text-white px-2 py-1 text-xs">
+          Theme: <span className="hidden dark:inline">DARK</span><span className="dark:hidden">LIGHT</span>
+        </div>
+        <Navbar />
 <Routes>
      {/* Public Routes */}
       <Route path="/public/" element={
@@ -75,6 +86,13 @@ function App() {
         </GovernmentRoute>
       } />
 
+      {/* Government Analytics Routes */}
+      <Route path="/gov/analytics" element={
+        <GovernmentRoute>
+          <GovAnalytics />
+        </GovernmentRoute>
+      } />
+
       {/* Government Disaster Details Routes */}
       <Route path="/gov/disaster/:disasterId" element={
         <GovernmentRoute>
@@ -110,6 +128,13 @@ function App() {
         </VolunteerRoute>
       } />
 
+      {/* Volunteer Analytics Routes */}
+      <Route path="/vol/analytics" element={
+        <VolunteerRoute>
+          <VolAnalytics />
+        </VolunteerRoute>
+      } />
+
       {/* Volunteer Disaster Details Routes */}
       <Route path="/vol/disaster/:disasterId" element={
         <VolunteerRoute>
@@ -121,6 +146,13 @@ function App() {
       <Route path="/fr/" element={
         <FirstResponderRoute>
           <FirstRespondersDashboard />
+        </FirstResponderRoute>
+      } />
+
+      {/* First Responder Analytics Route */}
+      <Route path="/fr/analytics" element={
+        <FirstResponderRoute>
+          <FirstResponderAnalytics />
         </FirstResponderRoute>
       } />
 
@@ -142,14 +174,28 @@ function App() {
           <SignUp />
         </AuthRoute>
       } />
+
+      {/* Widget Routes - Accessible to all authenticated users */}
+      <Route path="/widgets/notifications" element={
+        <PrivateRoute>
+          <NotificationWidget />
+        </PrivateRoute>
+      } />
+      <Route path="/widgets/settings" element={
+        <PrivateRoute>
+          <SettingsWidget />
+        </PrivateRoute>
+      } />
+
             <Route path="/unauthorized" element={<Unauthorized />} />
                   <Route path="/" element={<Navigate to="/public" replace />} />
       <Route path="*" element={<Navigate to="/public" replace />} />
-</Routes>   
-      {/* Add Footer at the bottom */}
-      <Footer />
-    </>
-  )
+        </Routes>   
+        {/* Add Footer at the bottom */}
+        <Footer />
+      </div>
+    </ThemeProvider>
+  );
 }
 
 export default App
