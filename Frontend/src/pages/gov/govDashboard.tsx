@@ -339,6 +339,181 @@ export const GovernmentDashboard = () => {
             </div>
           </div>
 
+          {/* Enhanced World Map Section */}
+          <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-blue-300/50 dark:hover:border-blue-500/50">
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Global Disaster Map</h2>
+                <p className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
+                  Real-time visualization of all tracked disasters
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{disasters.length}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-500">Total Disasters</div>
+              </div>
+            </div>
+            {loading ? (
+              <div className="h-96 bg-gray-100/50 dark:bg-gray-900/50 rounded-lg animate-pulse flex items-center justify-center transition-colors duration-300">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-500/20 mb-4">
+                    <ArrowPathIcon className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
+                  </div>
+                  <div className="text-gray-600 dark:text-gray-400">Loading global map...</div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative rounded-lg overflow-hidden">
+                <WorldMap ref={mapRef} disasters={disasters} activeTab={activeTab} />
+              </div>
+            )}
+          </div>
+
+          {/* Error Message with Enhanced UX */}
+          {error && (
+            <div className="group relative bg-red-50/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-700/50 rounded-xl p-6 mb-8 shadow-sm hover:bg-red-50/70 dark:hover:bg-red-900/30 transition-all duration-300">
+              <div className="flex items-start">
+                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 mr-4 group-hover:scale-110 transition-transform duration-300">
+                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-1">Connection Error</h3>
+                  <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Enhanced Disaster Management Tabs */}
+          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-lg overflow-hidden hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
+            <div className="border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30">
+              <nav className="flex">
+                {tabs.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex-1 py-6 px-8 text-sm font-medium text-center border-b-2 transition-all duration-200 relative group ${
+                      activeTab === tab.id
+                        ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20'
+                        : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center">
+                      <span>{tab.label}</span>
+                      <span className={`ml-3 px-3 py-1 text-xs rounded-full font-medium transition-all duration-300 ${
+                        activeTab === tab.id 
+                          ? 'bg-blue-500/20 text-blue-600 dark:text-blue-300 group-hover:scale-110' 
+                          : 'bg-gray-200/50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 group-hover:bg-gray-300/50 dark:group-hover:bg-gray-600/50'
+                      }`}>
+                        {tab.count}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </nav>
+            </div>
+
+            {/* Enhanced Disaster List */}
+            <div className="p-8">
+              {loading ? (
+                <div className="space-y-6">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 animate-pulse bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm transition-colors duration-300">
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="space-y-3">
+                          <div className="h-5 bg-gray-300/50 dark:bg-gray-700/50 rounded w-48"></div>
+                          <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-32"></div>
+                        </div>
+                        <div className="h-8 bg-gray-300/50 dark:bg-gray-700/50 rounded w-20"></div>
+                      </div>
+                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-full mb-2"></div>
+                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-3/4"></div>
+                    </div>
+                  ))}
+                </div>
+              ) : filteredDisasters.length === 0 ? (
+                <div className="text-center py-20">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700/50 mb-6">
+                    <ExclamationTriangleIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3">No disasters found</h3>
+                  <p className="text-gray-600 dark:text-gray-400">No disasters in the {activeTab} category.</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {filteredDisasters.map((disaster) => (
+                    <div
+                      key={disaster.$id}
+                      className="group relative border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer hover:border-blue-300/50 dark:hover:border-blue-500/50"
+                      onClick={() => handleDisasterItemClick(disaster)}
+                    >
+                      <div className="flex items-start justify-between mb-6">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-4 mb-4">
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white capitalize group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                              {disaster.emergency_type} Emergency
+                            </h3>
+                            <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${getUrgencyColor(disaster.urgency_level)}`}>
+                              {disaster.urgency_level?.toUpperCase()}
+                            </span>
+                          </div>
+                          <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed transition-colors duration-300">{disaster.situation}</p>
+                          <div className="flex items-center gap-6 text-sm">
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border transition-all duration-300 ${getStatusColor(disaster.status)}`}>
+                              {disaster.status.toUpperCase()}
+                            </span>
+                            <span className="text-gray-500 dark:text-gray-500">
+                              📅 {new Date(disaster.submitted_time * 1000).toLocaleDateString()}
+                            </span>
+                            {disaster.latitude && disaster.longitude && (
+                              <span className="text-gray-500 dark:text-gray-500">
+                                📍 {disaster.latitude.toFixed(3)}, {disaster.longitude.toFixed(3)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Enhanced Action Buttons */}
+                      <div className="flex gap-4 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
+                        {activeTab === 'active' && (
+                          <>
+                            <Link
+                              to={`/gov/disaster/${disaster.$id}/addResource`}
+                              className="group bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <PlusIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                              Add Resources
+                            </Link>
+                            <Link
+                              to={`/gov/disaster/${disaster.$id}`}
+                              className="group border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-6 py-3 rounded-lg transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 inline-flex items-center"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <DocumentTextIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                              More Details
+                            </Link>
+                          </>
+                        )}
+                        {(activeTab === 'pending' || activeTab === 'archived') && (
+                          <Link
+                            to={`/gov/disaster/${disaster.$id}/report`}
+                            className="group bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <DocumentTextIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
+                            Report Details
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Analytics Dashboard Section */}
           <div className="mb-16">
             <div className="text-center mb-12">
@@ -629,180 +804,6 @@ export const GovernmentDashboard = () => {
             </div>
           </div>
 
-          {/* Enhanced World Map Section */}
-          <div className="group relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:border-blue-300/50 dark:hover:border-blue-500/50">
-            <div className="flex justify-between items-center mb-8">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 transition-colors duration-300">Global Disaster Map</h2>
-                <p className="text-gray-600 dark:text-gray-400 transition-colors duration-300">
-                  Real-time visualization of all tracked disasters
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{disasters.length}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-500">Total Disasters</div>
-              </div>
-            </div>
-            {loading ? (
-              <div className="h-96 bg-gray-100/50 dark:bg-gray-900/50 rounded-lg animate-pulse flex items-center justify-center transition-colors duration-300">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-500/20 mb-4">
-                    <ArrowPathIcon className="w-6 h-6 text-blue-600 dark:text-blue-400 animate-spin" />
-                  </div>
-                  <div className="text-gray-600 dark:text-gray-400">Loading global map...</div>
-                </div>
-              </div>
-            ) : (
-              <div className="relative rounded-lg overflow-hidden">
-                <WorldMap ref={mapRef} disasters={disasters} activeTab={activeTab} />
-              </div>
-            )}
-          </div>
-
-          {/* Error Message with Enhanced UX */}
-          {error && (
-            <div className="group relative bg-red-50/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-700/50 rounded-xl p-6 mb-8 shadow-sm hover:bg-red-50/70 dark:hover:bg-red-900/30 transition-all duration-300">
-              <div className="flex items-start">
-                <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-red-100 dark:bg-red-500/20 mr-4 group-hover:scale-110 transition-transform duration-300">
-                  <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-medium text-red-800 dark:text-red-300 mb-1">Connection Error</h3>
-                  <div className="text-sm text-red-700 dark:text-red-400">{error}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Enhanced Disaster Management Tabs */}
-          <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-lg overflow-hidden hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
-            <div className="border-b border-gray-200/50 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-900/30">
-              <nav className="flex">
-                {tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 py-6 px-8 text-sm font-medium text-center border-b-2 transition-all duration-200 relative group ${
-                      activeTab === tab.id
-                        ? 'border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/20'
-                        : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-300 dark:hover:border-gray-500 hover:bg-gray-100/50 dark:hover:bg-gray-800/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-center">
-                      <span>{tab.label}</span>
-                      <span className={`ml-3 px-3 py-1 text-xs rounded-full font-medium transition-all duration-300 ${
-                        activeTab === tab.id 
-                          ? 'bg-blue-500/20 text-blue-600 dark:text-blue-300 group-hover:scale-110' 
-                          : 'bg-gray-200/50 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400 group-hover:bg-gray-300/50 dark:group-hover:bg-gray-600/50'
-                      }`}>
-                        {tab.count}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            {/* Enhanced Disaster List */}
-            <div className="p-8">
-              {loading ? (
-                <div className="space-y-6">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 animate-pulse bg-gray-100/50 dark:bg-gray-800/50 backdrop-blur-sm transition-colors duration-300">
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="space-y-3">
-                          <div className="h-5 bg-gray-300/50 dark:bg-gray-700/50 rounded w-48"></div>
-                          <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-32"></div>
-                        </div>
-                        <div className="h-8 bg-gray-300/50 dark:bg-gray-700/50 rounded w-20"></div>
-                      </div>
-                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-full mb-2"></div>
-                      <div className="h-4 bg-gray-300/50 dark:bg-gray-700/50 rounded w-3/4"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : filteredDisasters.length === 0 ? (
-                <div className="text-center py-20">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700/50 mb-6">
-                    <ExclamationTriangleIcon className="w-8 h-8 text-gray-500 dark:text-gray-400" />
-                  </div>
-                  <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-3">No disasters found</h3>
-                  <p className="text-gray-600 dark:text-gray-400">No disasters in the {activeTab} category.</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {filteredDisasters.map((disaster) => (
-                    <div
-                      key={disaster.$id}
-                      className="group relative border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:shadow-lg hover:scale-[1.02] cursor-pointer hover:border-blue-300/50 dark:hover:border-blue-500/50"
-                      onClick={() => handleDisasterItemClick(disaster)}
-                    >
-                      <div className="flex items-start justify-between mb-6">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-4 mb-4">
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white capitalize group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                              {disaster.emergency_type} Emergency
-                            </h3>
-                            <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300 ${getUrgencyColor(disaster.urgency_level)}`}>
-                              {disaster.urgency_level?.toUpperCase()}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed transition-colors duration-300">{disaster.situation}</p>
-                          <div className="flex items-center gap-6 text-sm">
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium border transition-all duration-300 ${getStatusColor(disaster.status)}`}>
-                              {disaster.status.toUpperCase()}
-                            </span>
-                            <span className="text-gray-500 dark:text-gray-500">
-                              📅 {new Date(disaster.submitted_time * 1000).toLocaleDateString()}
-                            </span>
-                            {disaster.latitude && disaster.longitude && (
-                              <span className="text-gray-500 dark:text-gray-500">
-                                📍 {disaster.latitude.toFixed(3)}, {disaster.longitude.toFixed(3)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Enhanced Action Buttons */}
-                      <div className="flex gap-4 pt-6 border-t border-gray-200/50 dark:border-gray-700/50">
-                        {activeTab === 'active' && (
-                          <>
-                            <Link
-                              to={`/gov/disaster/${disaster.$id}/addResource`}
-                              className="group bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <PlusIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                              Add Resources
-                            </Link>
-                            <Link
-                              to={`/gov/disaster/${disaster.$id}`}
-                              className="group border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 px-6 py-3 rounded-lg transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 inline-flex items-center"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <DocumentTextIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                              More Details
-                            </Link>
-                          </>
-                        )}
-                        {(activeTab === 'pending' || activeTab === 'archived') && (
-                          <Link
-                            to={`/gov/disaster/${disaster.$id}/report`}
-                            className="group bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 inline-flex items-center"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <DocumentTextIcon className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" />
-                            Report Details
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
 
           {/* Resource Deployment Analytics */}
           <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-8 mb-12 hover:bg-white/70 dark:hover:bg-gray-800/70 transition-all duration-300">
