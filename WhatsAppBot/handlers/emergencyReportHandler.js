@@ -1,5 +1,6 @@
 const { formatMessage, validateInput } = require('../utils/messageFormatter');
 const { makeApiRequest } = require('../api/apiClient');
+const { extractLocationFromMessage } = require('../utils/locationHelper');
 const FormData = require('form-data');
 
 const handleEmergencyReport = {
@@ -60,10 +61,31 @@ const handleEmergencyReport = {
                 
                 data.peopleCount = text;
                 currentState.step = 5;
-                msg.reply(formatMessage.question('Please provide the latitude of the emergency location.'));
+                msg.reply(formatMessage.question('Please share your location using WhatsApp\'s location sharing feature, or provide the latitude of the emergency location.'));
                 break;
                 
-            case 5: // Awaiting latitude
+            case 5: // Awaiting location or latitude
+                // Check if this is a location message
+                if (msg.type === 'location' || msg.hasMedia && msg.type === 'image' && msg._data && msg._data.isViewOnce) {
+                    try {
+                        const location = await extractLocationFromMessage(msg);
+                        if (location) {
+                            data.latitude = location.latitude.toString();
+                            data.longitude = location.longitude.toString();
+                            
+                            // Skip to step 7 since we have both coordinates from the location share
+                            currentState.step = 7;
+                            msg.reply(formatMessage.info('Location received! You can optionally send an *image* of the situation now (as an attachment), or type `skip` to finish.'));
+                            return;
+                        }
+                    } catch (error) {
+                        console.error('Error extracting location:', error);
+                        msg.reply(formatMessage.error('Failed to process location. Please try again or enter coordinates manually.'));
+                        return;
+                    }
+                }
+                
+                // If not a location message, proceed with manual latitude input
                 const latValidation = validateInput.coordinate(text, 'latitude');
                 if (!latValidation.valid) {
                     msg.reply(formatMessage.error(latValidation.message));
