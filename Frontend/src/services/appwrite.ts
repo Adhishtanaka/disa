@@ -158,7 +158,9 @@ export class AppwriteService {
       const response = await this.databases.listDocuments(
         this.databaseId,
         this.disastersCollectionId,
+        [Query.limit(100)] // Add limit to 100
       );
+      console.log('Fetched disasters:', response.documents); // Log fetched disasters
       return response.documents as unknown as DisasterDocument[];
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -194,7 +196,7 @@ export class AppwriteService {
       const response = await this.databases.listDocuments(
         this.databaseId,
         this.resourcesCollectionId,
-        [Query.equal("disaster_id", disasterId)]
+        [Query.equal("disaster_id", disasterId), Query.limit(100)] // Add limit to 100
       );
       return response.documents as unknown as ResourceDocument[];
     } catch (error: unknown) {
@@ -211,7 +213,7 @@ export class AppwriteService {
       const response = await this.databases.listDocuments(
         this.databaseId,
         this.tasksCollectionId,
-        [Query.equal("disaster_id", disasterId)]
+        [Query.equal("disaster_id", disasterId), Query.limit(100)] // Add limit to 100
       );
       return response.documents as unknown as TaskDocument[];
     } catch (error: unknown) {

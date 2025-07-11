@@ -239,13 +239,25 @@ class AppwriteService:
         except Exception as e:
             raise
     
+    def get_all_disasters(self, limit=100):
+        """Get all disaster documents (up to limit)."""
+        try:
+            documents = self.databases.list_documents(
+                database_id=self.database_id,
+                collection_id=self.disasters_collection_id,
+                queries=[Query.limit(limit)]
+            )
+            return documents.get("documents", [])
+        except AppwriteException as e:
+            raise Exception(f"Failed to list disasters: {e.message}")
+
     def list_resources_for_disaster(self, disaster_id: str) -> list:
         """List resources for a given disaster_id from the resources collection."""
         try:
             documents = self.databases.list_documents(
                 database_id=self.database_id,
                 collection_id=self.resources_collection_id,
-                queries=[Query.equal("disaster_id", disaster_id)]
+                queries=[Query.equal("disaster_id", disaster_id), Query.limit(100)] # Add limit to 100
             )
             return documents.get("documents", [])
         except AppwriteException as e:
@@ -380,7 +392,8 @@ class AppwriteService:
                 collection_id=self.tasks_collection_Id,
                 queries=[
                     Query.equal("user_id", user_id),
-                    Query.equal("disaster_id", disaster_id)
+                    Query.equal("disaster_id", disaster_id),
+                    Query.limit(100) # Add limit to 100
                 ]
             )
             return documents.get("documents", [])
