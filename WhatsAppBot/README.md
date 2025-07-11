@@ -8,6 +8,8 @@ This is a WhatsApp automation bot built with Node.js and the whatsapp-web.js lib
 - Group communication capabilities
 - Disaster information dissemination
 - Command-based interaction
+- User-friendly formatted responses
+- Modular architecture for easy maintenance and extension
 
 ## Prerequisites
 - Node.js (v14 or higher)
@@ -42,16 +44,15 @@ node main.js
 The bot will generate a QR code (first time only) which you need to scan using the WhatsApp mobile app.
 
 ## Commands
-(List key commands the bot responds to)
+The bot responds to the following commands:
 
-## Configuration
-Configuration settings can be modified in the main.js file.
+- `!help` - Display help information and list of commands
+- `!login` - Log in to your account
+- `!profile` - View your user profile
+- `!dashboard` - Access your user dashboard
+- `!reportemergency` - Report an emergency
+- `!nearbydisasters` - Check for disasters near a location
+- `!logout` - Log out from your account
+- `!cancel` - Cancel the current operation
 
-## Authentication
-The bot uses session data stored in the `.wwebjs_auth` directory to maintain authentication. Do not delete this directory unless you want to re-authenticate.
-
-## License
-(Your license information)
-
-## Contributing
-Contributions are welcome! Please feel free to submit a Pull Request.
+## Project Structure
