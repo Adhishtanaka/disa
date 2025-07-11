@@ -14,13 +14,19 @@ The Disaster Alert Bot provides a real-time communication channel between emerge
 - View detailed disaster information including type, urgency, affected people, and map locations
 - Get Google Maps links for precise disaster locations
 
+### 🔔 **Disaster Monitoring**
+- Activate real-time disaster monitoring with `/monitor` command
+- Receive alerts every 30 seconds when disasters occur in your area
+- Stop monitoring at any time with `/stopmonitor` command
+- One-click location sharing for easy setup
+
 ### 🚨 **Emergency Reporting**
 - Step-by-step guided emergency reporting with `/report` command
 - Support for multiple emergency types (Fire, Flood, Earthquake, Storm, etc.)
 - Urgency level selection (Low, Medium, High, Critical)
 - GPS location sharing for precise incident positioning
 - Photo uploads for visual evidence
-- Detailed situation descriptions
+- Detailed situation descriptions and affected people count
 
 ### 👤 **User Management**
 - Secure user authentication with `/login` command
@@ -36,7 +42,7 @@ The Disaster Alert Bot provides a real-time communication channel between emerge
 
 ## 🛠️ Technology Stack
 
-- **Python 3.11+**: Core programming language
+- **Python 3.x**: Core programming language
 - **Pyrogram**: Telegram client library for Python
 - **TgCrypto**: Cryptographic library for enhanced security
 - **Requests**: HTTP client for API communication
@@ -45,7 +51,7 @@ The Disaster Alert Bot provides a real-time communication channel between emerge
 ## 🔧 Setup and Installation
 
 ### Prerequisites
-- Python 3.11 or higher
+- Python 3.8 or higher
 - Telegram API credentials (API ID, API Hash)
 - Telegram Bot Token (from BotFather)
 - Disaster Management API access
@@ -86,29 +92,51 @@ The Disaster Alert Bot provides a real-time communication channel between emerge
    python run_bot.py
    ```
 
-## 🚀 Usage Examples
+## 🚀 Usage Guide
 
-### Finding Nearby Disasters
-```
-/nearby
-```
-Then share your location using the location button
+### Bot Commands
 
-### Emergency Reporting
-```
-/report
-```
-Follow the guided 4-step process:
-1. Select emergency type (Fire, Flood, Earthquake, etc.)
-2. Choose urgency level (Low, Medium, High, Critical)
-3. Describe the situation and estimate people affected
-4. Share location and optional photo evidence
+| Command | Description |
+|---------|-------------|
+| `/start` | Get started with the bot |
+| `/help` | View all available commands |
+| `/login` | Sign in to your account |
+| `/profile` | View your profile information |
+| `/dashboard` | Access your personal dashboard |
+| `/status` | Check current system disaster status |
+| `/nearby` | Find disasters near your location |
+| `/monitor` | Start monitoring for disasters (checks every 30s) |
+| `/stopmonitor` | Stop disaster monitoring |
+| `/report` | Report a new emergency |
+| `/logout` | Sign out from your account |
 
-### User Authentication
+### Emergency Reporting Process
+
+The `/report` command guides you through a 4-step process:
+
+1. **Select emergency type**:
+   - Fire, Flood, Earthquake, Storm, or Other
+
+2. **Choose urgency level**:
+   - Low, Medium, High, or Critical
+
+3. **Describe the situation**:
+   - Provide details about the emergency
+   - Estimate the number of people affected
+
+4. **Share information**:
+   - Send your location for precise positioning
+   - Optionally upload a photo as evidence
+
+You can cancel the reporting process at any time by typing `/cancel`.
+
+### Authentication
+
+To use protected features, login with:
 ```
 /login your_email@example.com your_password
 ```
-Then share your location for verification
+Then share your location for verification when prompted.
 
 ## 💼 Business Benefits
 
@@ -128,9 +156,7 @@ Then share your location for verification
 - **Temporary Storage**: Automatic cleanup of sensitive data
 - **Input Validation**: Protection against malformed inputs
 
-## 🧑‍💻 Development
-
-The project structure is organized as follows:
+## 🧑‍💻 Project Structure
 
 ```
 telegramBot/

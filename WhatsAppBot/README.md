@@ -9,6 +9,7 @@ The WhatsApp Disaster Management Bot is a powerful communication tool designed t
 - **Location Sharing**: Built-in location sharing for precise disaster reporting and nearby disaster checks
 - **Media Support**: Upload images of emergency situations for better assessment
 - **Disaster Proximity Detection**: Check for active disasters near your current location
+- **Disaster Monitoring**: Continuously monitor for new disasters near your location with automatic alerts for one hour, with ability to stop monitoring at any time
 - **User Profile Management**: View and manage your personal profile
 - **Interactive Command System**: Easy-to-use command structure with helpful prompts
 - **Formatted Responses**: Clear, formatted messages for easy readability in emergency situations
@@ -68,6 +69,8 @@ The bot responds to the following commands:
 - `!profile` - View your user profile information
 - `!reportemergency` - Report an emergency situation
 - `!nearbydisasters` - Check for disasters near your location
+- `!monitordisasters` - Start monitoring for new disasters near your location with automatic alerts
+- `!stopmonitoring` - Stop the active disaster monitoring for your location
 - `!logout` - Log out from your account
 - `!cancel` - Cancel the current operation
 
@@ -94,6 +97,7 @@ The bot follows a modular architecture with these key components:
 - **Easy Access**: No need for specialized apps—use the familiar WhatsApp interface
 - **Quick Reporting**: Report emergencies with essential details in a guided process
 - **Stay Informed**: Check for nearby disasters to make safety decisions
+- **Real-time Monitoring**: Set up continuous monitoring for new disasters in your area and receive immediate alerts when new emergencies are detected
 - **Reduced Response Time**: Direct line to emergency services through WhatsApp
 - **Low Data Usage**: Works efficiently even with limited connectivity
 

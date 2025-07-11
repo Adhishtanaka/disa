@@ -34,6 +34,8 @@ module.exports = {
       // "📊 *!dashboard* - Access your dashboard",
       "🆘 *!reportemergency* - Report an emergency situation",
       "🔍 *!nearbydisasters* - Check for disasters near your location",
+      "📍 *!monitordisasters* - Monitor disasters near your location",
+      "🛑 *!stopmonitoring* - Stop active disaster monitoring",
       "🚪 *!logout* - Log out from your account",
       "❓ *!help* - Show this help message",
     ],

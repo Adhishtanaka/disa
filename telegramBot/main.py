@@ -4,6 +4,7 @@ import time
 import json
 import re
 import os
+import asyncio
 from config import Config
 from disaster_api import DisasterAPI
 import traceback
@@ -40,6 +41,8 @@ async def help_command(client, message):
         "**Available Commands:**\n\n"
         "📍 **Location Services:**\n"
         "/nearby - Find disasters near your current location\n"
+        "/monitor - Start monitoring for disasters (checks every 30s)\n"
+        "/stopmonitor - Stop disaster monitoring\n"
         "🚨 **Emergency Services:**\n"
         "/status - Check current disaster status in system\n"
         "/report - Report a new emergency\n"
@@ -66,16 +69,16 @@ async def process_login(client, message):
             "Example: /login johndoe@example.com mypassword"
         )
         return
-    
+
     email = match.group(1)
     password = match.group(2)
-    
+
     # Optional: Debug what was captured (remove in production)
     # await message.reply(f"Debug - Email: {email}, Password length: {len(password)}")
-    
+
     # Request location
     location_button = KeyboardButton(
-        "Share Location 📍", 
+        "Share Location 📍",
         request_location=True
     )
     reply_markup = ReplyKeyboardMarkup(
@@ -83,12 +86,12 @@ async def process_login(client, message):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    
+
     await message.reply(
         f"Please share your current location to complete login:",
         reply_markup=reply_markup
     )
-    
+
     # Store credentials temporarily
     Config.USER_SESSIONS[message.from_user.id] = {
         "email": email,
@@ -96,39 +99,91 @@ async def process_login(client, message):
         "login_pending": True
     }
 
+# Function to check for disasters periodically
+async def check_disasters_periodically(client, user_id, latitude, longitude):
+    """Check for disasters periodically and send alerts if found"""
+    try:
+        while True:
+            # Call the API to get nearby disasters
+            nearby_data = api.check_nearby_disasters(latitude, longitude)
+
+            if "error" in nearby_data:
+                await client.send_message(user_id, f"❌ Error checking for disasters: {nearby_data['error']}")
+            else:
+                # Filter only active disasters
+                active_disasters = [d for d in nearby_data if d.get("status", "").lower() == "active"]
+
+                if active_disasters:
+                    # Format the response
+                    response = "🚨 **DISASTER ALERT UPDATE:**\n\n"
+                    response += f"Periodic check found {len(active_disasters)} active disaster(s) in your area.\n\n"
+
+                    for idx, disaster in enumerate(active_disasters, 1):
+                        disaster_type = disaster.get("emergency_type", "Unknown")
+                        urgency = disaster.get("urgency_level", "Unknown")
+                        people_affected = disaster.get("people_count", "Unknown")
+                        lat = disaster.get("latitude")
+                        lng = disaster.get("longitude")
+                        status = disaster.get("status", "Unknown")
+
+                        response += f"**{idx}. {disaster_type.title()} - {urgency.title()} Urgency**\n"
+                        response += f"Status: {status.title()}\n"
+                        response += f"People affected: {people_affected}\n"
+
+                        if lat and lng:
+                            map_link = create_map_link(lat, lng)
+                            response += f"[View on Map]({map_link})\n"
+
+                        response += "\n"
+
+                    await client.send_message(user_id, response)
+
+            # Wait for 30 seconds before checking again
+            await asyncio.sleep(30)
+    except asyncio.CancelledError:
+        # Task was cancelled, cleanup if needed
+        pass
+    except Exception as e:
+        error_msg = f"Error in monitoring task: {str(e)}"
+        print(error_msg)
+        try:
+            await client.send_message(user_id, f"❌ Monitoring stopped due to an error: {str(e)}")
+        except:
+            pass
+
 # Handle location for login
 @app.on_message(filters.location & filters.private)
 async def handle_location(client, message):
     user_id = message.from_user.id
-    
+
     # Check if we're waiting for a location for login
     if user_id in Config.USER_SESSIONS and Config.USER_SESSIONS[user_id].get("login_pending"):
         # Get location data
         latitude = message.location.latitude
         longitude = message.location.longitude
-        
+
         # Get stored credentials
         email = Config.USER_SESSIONS[user_id]["email"]
         password = Config.USER_SESSIONS[user_id]["password"]
-        
+
         # Send login request
         loading_msg = await message.reply("Logging in, please wait...")
         login_result = api.login(email, password, latitude, longitude)
-        
+
         if "error" in login_result:
             await loading_msg.edit_text(f"❌ Login failed: {login_result['error']}")
             Config.USER_SESSIONS.pop(user_id, None)
             return
-        
+
         # Store the token
         Config.USER_SESSIONS[user_id] = {
             "token": login_result["access_token"],
             "user_info": login_result["user_info"]
         }
-        
+
         # Set token for this user's API requests
         api.set_auth_token(login_result["access_token"])
-        
+
         await loading_msg.edit_text(
             f"✅ Login successful! Welcome {login_result['user_info'].get('name', 'User')}.\n\n"
             f"Use /dashboard to view your information or /nearby to check disasters in your area."
@@ -138,18 +193,17 @@ async def handle_location(client, message):
         # Get location data
         latitude = message.location.latitude
         longitude = message.location.longitude
-        
+
         # Get stored report data
         report_data = Config.USER_SESSIONS[user_id]["report_data"]
         report_data["latitude"] = str(latitude)
         report_data["longitude"] = str(longitude)
-        
+
         # Ask for an optional image
         await message.reply(
-            "If you have a photo of the emergency, please upload it now.\n"
-            "Or type /skip to submit the report without an image."
+            "Which have a photo of the emergency, please upload it now."
         )
-        
+
         # Update the session state
         Config.USER_SESSIONS[user_id]["waiting_for_report_image"] = True
         Config.USER_SESSIONS[user_id]["waiting_for_report_location"] = False
@@ -157,26 +211,33 @@ async def handle_location(client, message):
         # Process as a regular location sharing for nearby disasters
         latitude = message.location.latitude
         longitude = message.location.longitude
-        
+
+        # Store the user's location for future use
+        Config.USER_LOCATIONS[user_id] = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "timestamp": time.time()
+        }
+
         loading_msg = await message.reply("Searching for nearby disasters...")
-        
+
         # Call the API to get nearby disasters
         nearby_data = api.check_nearby_disasters(latitude, longitude)
-        
+
         if "error" in nearby_data:
             await loading_msg.edit_text(f"❌ Error: {nearby_data['error']}")
             return
-        
+
         # Filter only active disasters
         active_disasters = [d for d in nearby_data if d.get("status", "").lower() == "active"]
-        
+
         if not active_disasters:
             await loading_msg.edit_text("✅ Good news! No active disasters reported in your area.")
             return
-        
+
         # Format the response
         response = "🚨 **Nearby Active Disasters:**\n\n"
-        
+
         for idx, disaster in enumerate(active_disasters, 1):
             # Use the correct keys from the actual API response
             disaster_type = disaster.get("emergency_type", "Unknown")
@@ -186,90 +247,138 @@ async def handle_location(client, message):
             lng = disaster.get("longitude")
             # situation = disaster.get("situation", "No details available")
             status = disaster.get("status", "Unknown")
-            
+
             response += f"**{idx}. {disaster_type.title()} - {urgency.title()} Urgency**\n"
             response += f"Status: {status.title()}\n"
             response += f"People affected: {people_affected}\n"
             # response += f"Situation: {situation[:50]}{'...' if len(situation) > 50 else ''}\n"
-            
+
             if lat and lng:
                 map_link = create_map_link(lat, lng)
                 response += f"[View on Map]({map_link})\n"
-            
+
             response += "\n"
-        
+
         await loading_msg.edit_text(response)
+
+        # Offer to start monitoring
+        keyboard = [
+            [InlineKeyboardButton("Start Monitoring (30s)", callback_data=f"monitor_start")]
+        ]
+        reply_markup = InlineKeyboardMarkup(keyboard)
+
+        await message.reply(
+            "Would you like to start monitoring this location for disaster alerts? You'll be notified every 30 seconds if disasters are detected.",
+            reply_markup=reply_markup
+        )
 
 # Profile command
 @app.on_message(filters.command("profile") & filters.private)
 async def profile_command(client, message):
     user_id = message.from_user.id
-    
+
+    # Check if user is logged in
+    if user_id not in Config.USER_SESSIONS or "token" not in Config.USER_SESSIONS[user_id]:
+        await message.reply("❌ You need to login first. Use /login to sign in.")
+        return
+
+    # Get token
+    token = Config.USER_SESSIONS[user_id]["token"]
+
+    # Send request
+    loading_msg = await message.reply("Loading your profile...")
+    profile_data = api.get_user_profile(token)
+
+    if "error" in profile_data:
+        await loading_msg.edit_text(f"❌ Error: {profile_data['error']}")
+        return
+
+    # Format the response
+    name = profile_data.get("name", "Not set")
+    email = profile_data.get("email", "Not set")
+    phone = profile_data.get("phone", "Not set")
+    # user_type = profile_data.get("user_type", "Regular")
+    # location = profile_data.get("address", "Not set")
+
+    response = f"👤 **User Profile**\n\n"
+    response += f"**Name:** {name}\n"
+    response += f"**Email:** {email}\n"
+    response += f"**Phone:** {phone}\n"
+    # response += f"**Type:** {user_type}\n"
+    # response += f"**Location:** {location}\n"
+
+    await loading_msg.edit_text(response)
+
+# Profile command
+@app.on_message(filters.command("profile") & filters.private)
+async def profile_command(client, message):
+    user_id = message.from_user.id
+
     # Check if user is logged in
     if user_id not in Config.USER_SESSIONS or "token" not in Config.USER_SESSIONS[user_id]:
         await message.reply(
             "❌ You are not logged in. Please use /login to sign in first."
         )
         return
-    
+
     # Get the token
     token = Config.USER_SESSIONS[user_id]["token"]
-    
+
     # Get profile data
     loading_msg = await message.reply("Fetching your profile...")
     profile_data = api.get_user_profile(token)
-    
+
     if "error" in profile_data:
         await loading_msg.edit_text(f"❌ Error: {profile_data['error']}")
         return
-    
+
     # Format the response
     response = "👤 **Your Profile:**\n\n"
     response += f"**Name:** {profile_data.get('name', 'N/A')}\n"
     response += f"**Email:** {profile_data.get('email', 'N/A')}\n"
     response += f"**Phone:** {profile_data.get('phone', 'N/A')}\n"
     response += f"**Role:** {profile_data.get('role', 'N/A')}\n"
-    
+
     if profile_data.get('skills'):
         response += f"**Skills:** {', '.join(profile_data['skills'])}\n"
-    
+
     if profile_data.get('department'):
         response += f"**Department:** {profile_data.get('department')}\n"
-    
+
     if profile_data.get('unit'):
         response += f"**Unit:** {profile_data.get('unit')}\n"
-    
+
     if profile_data.get('position'):
         response += f"**Position:** {profile_data.get('position')}\n"
-    
+
     await loading_msg.edit_text(response)
 
 # Dashboard command
 @app.on_message(filters.command("dashboard") & filters.private)
 async def dashboard_command(client, message):
     user_id = message.from_user.id
-    
+
     # Check if user is logged in
     if user_id not in Config.USER_SESSIONS or "token" not in Config.USER_SESSIONS[user_id]:
         await message.reply(
             "❌ You are not logged in. Please use /login to sign in first."
         )
         return
-    
+
     # Set the token for API requests
     api.set_auth_token(Config.USER_SESSIONS[user_id]["token"])
-    
+
     # Get dashboard data
     loading_msg = await message.reply("Fetching your dashboard...")
     dashboard_data = api.get_user_dashboard()
-    
+
     if "error" in dashboard_data:
         await loading_msg.edit_text(f"❌ Error: {dashboard_data['error']}")
         return
-    
+
     # Format the response - this will depend on what the actual API returns
     response = "📊 **Your Dashboard:**\n\n"
-    
+
     # This is a generic formatter, adjust based on actual API response structure
     if isinstance(dashboard_data, dict):
         for key, value in dashboard_data.items():
@@ -279,23 +388,23 @@ async def dashboard_command(client, message):
                 response += f"**{key.replace('_', ' ').title()}:** {value}\n"
     else:
         response += str(dashboard_data)
-    
+
     await loading_msg.edit_text(response)
 
 # Status command
 @app.on_message(filters.command("status") & filters.private)
 async def status_command(client, message):
     loading_msg = await message.reply("Checking disaster status...")
-    
+
     status_data = api.check_disaster_status()
-    
+
     if "error" in status_data:
         await loading_msg.edit_text(f"❌ Error: {status_data['error']}")
         return
-    
+
     # Format the response based on what the API returns
     response = "🌍 **Current Disaster Status:**\n\n"
-    
+
     # This is a generic formatter, adjust based on actual API response structure
     if isinstance(status_data, dict):
         for key, value in status_data.items():
@@ -305,7 +414,7 @@ async def status_command(client, message):
                 response += f"**{key.replace('_', ' ').title()}:** {value}\n"
     else:
         response += str(status_data)
-    
+
     await loading_msg.edit_text(response)
 
 # Nearby command with address
@@ -314,7 +423,7 @@ async def nearby_command(client, message):
     # Check if address is provided
     if len(message.command) == 1:
         location_button = KeyboardButton(
-            "Share Location 📍", 
+            "Share Location 📍",
             request_location=True
         )
         reply_markup = ReplyKeyboardMarkup(
@@ -322,34 +431,145 @@ async def nearby_command(client, message):
             resize_keyboard=True,
             one_time_keyboard=True
         )
-        
+
         await message.reply(
             "Please share your location to find nearby disasters:",
             reply_markup=reply_markup
         )
         return
-    
+
     # Get the address from command
     address = " ".join(message.command[1:])
-    
+
     # Here you would normally geocode the address to get coordinates
     # For this example, we'll just inform the user that geocoding isn't implemented
     await message.reply(
         "📍 To check disasters near you, please share your location directly using the location button."
     )
 
+@app.on_callback_query(filters.regex("^monitor_"))
+async def monitor_callback(client, callback_query):
+    user_id = callback_query.from_user.id
+    data = callback_query.data
+
+    if data == "monitor_start":
+        # Check if we have a location for this user
+        if user_id in Config.USER_LOCATIONS:
+            location = Config.USER_LOCATIONS[user_id]
+            latitude = location["latitude"]
+            longitude = location["longitude"]
+
+            # Cancel any existing monitoring task for this user
+            if user_id in Config.MONITORING_TASKS:
+                Config.MONITORING_TASKS[user_id].cancel()
+
+            # Start the monitoring
+            task = asyncio.create_task(check_disasters_periodically(client, user_id, latitude, longitude))
+            Config.MONITORING_TASKS[user_id] = task
+
+            await callback_query.answer("Monitoring started!")
+            await callback_query.edit_message_text(
+                "✅ Disaster monitoring has been started! You'll receive alerts every 30 seconds if disasters are detected.\n\n"
+                "To stop monitoring, use /stopmonitor command."
+            )
+        else:
+            await callback_query.answer("No location found. Please share your location first.")
+
+    elif data == "monitor_stop":
+        if user_id in Config.MONITORING_TASKS:
+            Config.MONITORING_TASKS[user_id].cancel()
+            Config.MONITORING_TASKS.pop(user_id, None)
+
+            await callback_query.answer("Monitoring stopped!")
+            await callback_query.edit_message_text("✅ Disaster monitoring has been stopped.")
+        else:
+            await callback_query.answer("You don't have active monitoring.")
+
+@app.on_message(filters.command(["monitor"]))
+async def monitor_command(client, message):
+    user_id = message.from_user.id
+
+    # Check if we have arguments
+    if len(message.command) > 1 and message.command[1].lower() == "stop":
+        # Stop monitoring
+        if user_id in Config.MONITORING_TASKS:
+            Config.MONITORING_TASKS[user_id].cancel()
+            Config.MONITORING_TASKS.pop(user_id, None)
+            await message.reply("✅ Disaster monitoring has been stopped.")
+        else:
+            await message.reply("You don't have active monitoring.")
+        return
+
+    # Check if we have a location for this user
+    if user_id in Config.USER_LOCATIONS:
+        location = Config.USER_LOCATIONS[user_id]
+        latitude = location["latitude"]
+        longitude = location["longitude"]
+
+        # Check if monitoring is already active
+        if user_id in Config.MONITORING_TASKS:
+            keyboard = [
+                [InlineKeyboardButton("Stop Monitoring", callback_data="monitor_stop")]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+
+            await message.reply(
+                "⚠️ You already have active disaster monitoring.\n\n"
+                "Would you like to stop it?",
+                reply_markup=reply_markup
+            )
+        else:
+            # Cancel any existing monitoring task for this user
+            if user_id in Config.MONITORING_TASKS:
+                Config.MONITORING_TASKS[user_id].cancel()
+
+            # Start the monitoring
+            task = asyncio.create_task(check_disasters_periodically(client, user_id, latitude, longitude))
+            Config.MONITORING_TASKS[user_id] = task
+
+            await message.reply(
+                "✅ Disaster monitoring has been started! You'll receive alerts every 30 seconds if disasters are detected.\n\n"
+                "To stop monitoring, use /stopmonitor command."
+            )
+    else:
+        location_button = KeyboardButton(
+            "Share Location 📍",
+            request_location=True
+        )
+        reply_markup = ReplyKeyboardMarkup(
+            [[location_button]],
+            resize_keyboard=True,
+            one_time_keyboard=True
+        )
+
+        await message.reply(
+            "Please share your location to start disaster monitoring:",
+            reply_markup=reply_markup
+        )
+
+@app.on_message(filters.command(["stopmonitor"]))
+async def stopmonitor_command(client, message):
+    user_id = message.from_user.id
+
+    if user_id in Config.MONITORING_TASKS:
+        Config.MONITORING_TASKS[user_id].cancel()
+        Config.MONITORING_TASKS.pop(user_id, None)
+        await message.reply("✅ Disaster monitoring has been stopped.")
+    else:
+        await message.reply("You don't have active monitoring.")
+
 # Report command - Improved with a guided step-by-step flow
 @app.on_message(filters.command("report") & filters.private)
 async def report_command(client, message):
     user_id = message.from_user.id
-    
+
     # Check if user is logged in
     if user_id not in Config.USER_SESSIONS or "token" not in Config.USER_SESSIONS[user_id]:
         await message.reply(
             "❌ You are not logged in. Please use /login to sign in first."
         )
         return
-    
+
     # Initialize the report data
     if "report_data" not in Config.USER_SESSIONS[user_id]:
         Config.USER_SESSIONS[user_id]["report_data"] = {
@@ -357,12 +577,12 @@ async def report_command(client, message):
         }
     # Start the step-by-step reporting flow
     Config.USER_SESSIONS[user_id]["report_step"] = "type"
-    
+
     # Ask for emergency type
     emergency_types = [
         "Fire", "Flood", "Earthquake", "Storm", "Other"
     ]
-    
+
     buttons = []
     row = []
     for i, e_type in enumerate(emergency_types):
@@ -370,9 +590,9 @@ async def report_command(client, message):
         if (i + 1) % 2 == 0 or i == len(emergency_types) - 1:
             buttons.append(row)
             row = []
-    
+
     reply_markup = InlineKeyboardMarkup(buttons)
-    
+
     await message.reply(
         "🚨 **Emergency Reporting - Step 1 of 4**\n\n"
         "Please select the type of emergency:",
@@ -383,37 +603,37 @@ async def report_command(client, message):
 @app.on_callback_query(filters.regex(r"^e_type_"))
 async def handle_emergency_type(client, callback_query):
     user_id = callback_query.from_user.id
-    
+
     # Check if user is in the reporting flow
-    if (user_id not in Config.USER_SESSIONS or 
+    if (user_id not in Config.USER_SESSIONS or
         "report_step" not in Config.USER_SESSIONS[user_id] or
         Config.USER_SESSIONS[user_id]["report_step"] != "type"):
         await callback_query.answer("Error: Please start the report process again with /report")
         return
-    
+
     # Get the emergency type
     emergency_type = callback_query.data.replace("e_type_", "")
-    
+
     # Store the emergency type
     Config.USER_SESSIONS[user_id]["report_data"]["emergencyType"] = emergency_type
-    
+
     # Move to the next step - urgency level
     Config.USER_SESSIONS[user_id]["report_step"] = "urgency"
-    
+
     # Create buttons for urgency levels
     urgency_levels = [
         "Low", "Medium", "High", "Critical"
     ]
-    
+
     buttons = []
     for level in urgency_levels:
         buttons.append([InlineKeyboardButton(level, callback_data=f"e_urgency_{level}")])
-    
+
     reply_markup = InlineKeyboardMarkup(buttons)
-    
+
     # Answer the callback to clear the loading state
     await callback_query.answer()
-    
+
     # Send the urgency selection message
     await callback_query.message.edit_text(
         f"🚨 **Emergency Reporting - Step 2 of 4**\n\n"
@@ -426,26 +646,26 @@ async def handle_emergency_type(client, callback_query):
 @app.on_callback_query(filters.regex(r"^e_urgency_"))
 async def handle_emergency_urgency(client, callback_query):
     user_id = callback_query.from_user.id
-    
+
     # Check if user is in the reporting flow
-    if (user_id not in Config.USER_SESSIONS or 
+    if (user_id not in Config.USER_SESSIONS or
         "report_step" not in Config.USER_SESSIONS[user_id] or
         Config.USER_SESSIONS[user_id]["report_step"] != "urgency"):
         await callback_query.answer("Error: Please start the report process again with /report")
         return
-    
+
     # Get the urgency level
     urgency_level = callback_query.data.replace("e_urgency_", "")
-    
+
     # Store the urgency level
     Config.USER_SESSIONS[user_id]["report_data"]["urgencyLevel"] = urgency_level
-    
+
     # Move to the next step - asking for situation details
     Config.USER_SESSIONS[user_id]["report_step"] = "situation"
-    
+
     # Answer the callback to clear the loading state
     await callback_query.answer()
-    
+
     # Ask for situation details
     await callback_query.message.edit_text(
         f"🚨 **Emergency Reporting - Step 3 of 4**\n\n"
@@ -459,26 +679,26 @@ async def handle_emergency_urgency(client, callback_query):
 @app.on_message(filters.text & filters.private & filters.reply)
 async def handle_situation_description(client, message):
     user_id = message.from_user.id
-    
+
     # Check if user is in the reporting flow waiting for situation description
-    if (user_id in Config.USER_SESSIONS and 
+    if (user_id in Config.USER_SESSIONS and
         "report_step" in Config.USER_SESSIONS[user_id] and
         Config.USER_SESSIONS[user_id]["report_step"] == "situation"):
-        
+
         # Get the situation description
         situation = message.text
-        
+
         # Store the situation
         Config.USER_SESSIONS[user_id]["report_data"]["situation"] = situation
-        
+
         # Move to the next step - asking for people count
         Config.USER_SESSIONS[user_id]["report_step"] = "people_count"
-        
+
         # Create buttons for common people count ranges
         people_ranges = [
             "1-5", "6-10", "11-20", "21-50", "51-100", "100+"
         ]
-        
+
         buttons = []
         row = []
         for i, count in enumerate(people_ranges):
@@ -486,11 +706,11 @@ async def handle_situation_description(client, message):
             if (i + 1) % 3 == 0 or i == len(people_ranges) - 1:
                 buttons.append(row)
                 row = []
-        
+
         buttons.append([InlineKeyboardButton("Not sure", callback_data="e_people_unknown")])
-        
+
         reply_markup = InlineKeyboardMarkup(buttons)
-        
+
         # Ask for people count
         await message.reply(
             f"🚨 **Emergency Reporting - Step 4 of 4**\n\n"
@@ -505,30 +725,30 @@ async def handle_situation_description(client, message):
 @app.on_callback_query(filters.regex(r"^e_people_"))
 async def handle_people_count(client, callback_query):
     user_id = callback_query.from_user.id
-    
+
     # Check if user is in the reporting flow
-    if (user_id not in Config.USER_SESSIONS or 
+    if (user_id not in Config.USER_SESSIONS or
         "report_step" not in Config.USER_SESSIONS[user_id] or
         Config.USER_SESSIONS[user_id]["report_step"] != "people_count"):
         await callback_query.answer("Error: Please start the report process again with /report")
         return
-    
+
     # Get the people count
     people_count = callback_query.data.replace("e_people_", "")
-    
+
     # Store the people count
     Config.USER_SESSIONS[user_id]["report_data"]["peopleCount"] = people_count
-    
+
     # Move to the next step - asking for location
     Config.USER_SESSIONS[user_id]["report_step"] = "location"
     Config.USER_SESSIONS[user_id]["waiting_for_report_location"] = True
-    
+
     # Answer the callback to clear the loading state
     await callback_query.answer()
-    
+
     # Ask for location
     location_button = KeyboardButton(
-        "Share Emergency Location 📍", 
+        "Share Emergency Location 📍",
         request_location=True
     )
     reply_markup = ReplyKeyboardMarkup(
@@ -536,10 +756,10 @@ async def handle_people_count(client, callback_query):
         resize_keyboard=True,
         one_time_keyboard=True
     )
-    
+
     # Show summary and ask for location
     report_data = Config.USER_SESSIONS[user_id]["report_data"]
-    
+
     await callback_query.message.reply(
         f"📋 **Emergency Report Summary:**\n\n"
         f"Type: **{report_data['emergencyType']}**\n"
@@ -554,31 +774,30 @@ async def handle_people_count(client, callback_query):
 @app.on_message(filters.location & filters.private)
 async def handle_report_location(client, message):
     user_id = message.from_user.id
-    
+
     # Check if we're waiting for a location for an emergency report
-    if (user_id in Config.USER_SESSIONS and 
+    if (user_id in Config.USER_SESSIONS and
         Config.USER_SESSIONS[user_id].get("waiting_for_report_location") and
         "report_data" in Config.USER_SESSIONS[user_id]):
-        
+
         # Get location data
         latitude = message.location.latitude
         longitude = message.location.longitude
-        
+
         # Get stored report data
         report_data = Config.USER_SESSIONS[user_id]["report_data"]
         report_data["latitude"] = str(latitude)
         report_data["longitude"] = str(longitude)
-        
+
         # Ask for an optional image
         await message.reply(
             "Which you have a photo of the emergency, please upload it now."
-            # "Or type /skip to submit the report without an image."
         )
-        
+
         # Update the session state
         Config.USER_SESSIONS[user_id]["waiting_for_report_image"] = True
         Config.USER_SESSIONS[user_id]["waiting_for_report_location"] = False
-        
+
     # If not waiting for report location, handle as a regular location request
     elif user_id not in Config.USER_SESSIONS or not Config.USER_SESSIONS[user_id].get("waiting_for_report_location"):
         await handle_location(client, message)
@@ -588,12 +807,12 @@ async def handle_report_location(client, message):
 @app.on_message(filters.photo & filters.private)
 async def handle_report_photo(client, message):
     user_id = message.from_user.id
-    
+
     # Check if we're waiting for a photo for an emergency report
-    if (user_id in Config.USER_SESSIONS and 
+    if (user_id in Config.USER_SESSIONS and
         Config.USER_SESSIONS[user_id].get("waiting_for_report_image") and
         "report_data" in Config.USER_SESSIONS[user_id]):
-        
+
         loading_msg = await message.reply("Processing your image...")
 
         # --- START: Re-introduce temp_downloads directory logic ---
@@ -615,18 +834,18 @@ async def handle_report_photo(client, message):
         # --- END: Re-introduce temp_downloads directory logic ---
 
         print(f"DEBUG: Attempting to download image to: {image_path}")
-        
+
         try:
             # Download the image from Telegram
             await client.download_media(message.photo, file_name=image_path)
-            
+
             # Verify if the file was actually downloaded
             if not os.path.exists(image_path):
                 print(f"ERROR: File was not created at {image_path} after download_media!")
                 # Re-raise the error so the outer except block can handle it and show traceback
                 raise FileNotFoundError(f"Failed to download image to {image_path}. File not found after download.")
             print(f"DEBUG: Image successfully downloaded to: {image_path}")
-            
+
             # Authentication check
             if user_id not in Config.USER_SESSIONS or "token" not in Config.USER_SESSIONS[user_id]:
                 await loading_msg.edit_text("❌ Authentication token missing. Please log in again.")
@@ -642,32 +861,32 @@ async def handle_report_photo(client, message):
 
             # Set the token for API requests
             api.set_auth_token(Config.USER_SESSIONS[user_id]["token"])
-            
+
             # Get report data
             report_data = Config.USER_SESSIONS[user_id]["report_data"]
-            
+
             # Open the downloaded image file in binary read mode
             with open(image_path, 'rb') as image_file:
                 print(f"DEBUG: Opened image file: {image_path} for API submission.")
                 # Send the report with the image
                 report_result = api.report_emergency(report_data, image=image_file)
-                
+
             # Clean up the local image file after sending
             if os.path.exists(image_path):
                 os.remove(image_path)
                 print(f"DEBUG: Removed temporary image file: {image_path}")
-            
+
             # Clean up session data
             Config.USER_SESSIONS[user_id].pop("waiting_for_report_location", None)
             Config.USER_SESSIONS[user_id].pop("waiting_for_report_image", None)
             Config.USER_SESSIONS[user_id].pop("report_data", None)
             Config.USER_SESSIONS[user_id].pop("report_step", None)
-            
+
             if "error" in report_result:
                 await loading_msg.edit_text(f"❌ Report submission failed: {report_result['error']}")
                 print(f"ERROR: API returned an error: {report_result['error']}")
                 return
-            
+
             await loading_msg.edit_text(
                 "✅ Your emergency report with image has been submitted successfully!\n\n"
                 "Thank you for helping keep your community safe."
@@ -675,7 +894,7 @@ async def handle_report_photo(client, message):
             print("DEBUG: Emergency report submitted successfully.")
 
         except Exception as e:
-            traceback.print_exc() 
+            traceback.print_exc()
             await loading_msg.edit_text(f"❌ Error processing image: {str(e)}. Please check the bot's console for details.")
             print(f"ERROR: Exception caught in handle_report_photo: {e}")
             # Clean up the image file on error, only if it exists
@@ -688,58 +907,25 @@ async def handle_report_photo(client, message):
             "To report an emergency, use the /report command first."
         )
 
-# Handle /skip command for emergency reports without images - improved version
-# @app.on_message(filters.command("skip") & filters.private)
-# async def skip_image_upload(client, message):
-#     user_id = message.from_user.id
-    
-#     # Check if we're waiting for an image for an emergency report
-#     if (user_id in Config.USER_SESSIONS and 
-#         Config.USER_SESSIONS[user_id].get("waiting_for_report_image") and
-#         "report_data" in Config.USER_SESSIONS[user_id]):
-        
-#         # Set the token for API requests
-#         api.set_auth_token(Config.USER_SESSIONS[user_id]["token"])
-        
-#         # Get report data
-#         report_data = Config.USER_SESSIONS[user_id]["report_data"]
-        
-#         # Send the report without an image
-#         loading_msg = await message.reply("Submitting your emergency report...")
-#         report_result = api.report_emergency(report_data)
-        
-#         # Clean up session data
-#         Config.USER_SESSIONS[user_id].pop("waiting_for_report_location", None)
-#         Config.USER_SESSIONS[user_id].pop("waiting_for_report_image", None)
-#         Config.USER_SESSIONS[user_id].pop("report_data", None)
-#         Config.USER_SESSIONS[user_id].pop("report_step", None)
-        
-#         if "error" in report_result:
-#             await loading_msg.edit_text(f"❌ Report submission failed: {report_result['error']}")
-#             return
-        
-#         await loading_msg.edit_text(
-#             "✅ Your emergency report has been submitted successfully!\n\n"
-#             "Thank you for helping keep your community safe."
-#         )
+#
 
 # Cancel report command (new)
 @app.on_message(filters.command("cancel_report") & filters.private)
 async def cancel_report(client, message):
     user_id = message.from_user.id
-    
+
     # Check if user is in the reporting flow
-    if (user_id in Config.USER_SESSIONS and 
-        ("report_step" in Config.USER_SESSIONS[user_id] or 
+    if (user_id in Config.USER_SESSIONS and
+        ("report_step" in Config.USER_SESSIONS[user_id] or
          "waiting_for_report_location" in Config.USER_SESSIONS[user_id] or
          "waiting_for_report_image" in Config.USER_SESSIONS[user_id])):
-        
+
         # Clean up session data
         Config.USER_SESSIONS[user_id].pop("waiting_for_report_location", None)
         Config.USER_SESSIONS[user_id].pop("waiting_for_report_image", None)
         Config.USER_SESSIONS[user_id].pop("report_data", None)
         Config.USER_SESSIONS[user_id].pop("report_step", None)
-        
+
         await message.reply(
             "✅ Emergency report cancelled.\n\n"
             "You can start a new report at any time with /report"
@@ -753,24 +939,60 @@ async def cancel_report(client, message):
 @app.on_message(filters.command("logout") & filters.private)
 async def logout_command(client, message):
     user_id = message.from_user.id
-    
+
     # Check if user is logged in
     if user_id not in Config.USER_SESSIONS or "token" not in Config.USER_SESSIONS[user_id]:
         await message.reply(
             "❌ You are not currently logged in."
         )
         return
-    
+
     # Clear the session data
     Config.USER_SESSIONS.pop(user_id, None)
-    
+
     # Clear API token
     api.clear_auth_token()
-    
+
     await message.reply(
         "✅ You have been successfully logged out."
     )
 
 # Run the bot
+async def cleanup_tasks():
+    """Cleanup all monitoring tasks before shutdown"""
+    print("Cleaning up monitoring tasks...")
+    for user_id, task in list(Config.MONITORING_TASKS.items()):
+        try:
+            task.cancel()
+            await task
+        except Exception as e:
+            print(f"Error cancelling task for user {user_id}: {e}")
+    Config.MONITORING_TASKS.clear()
+    print("All monitoring tasks cleaned up")
+
 def run_bot():
-    app.run()
+    """Run the bot with proper cleanup on shutdown"""
+    try:
+        print("Starting bot...")
+        # Register cleanup handler for proper shutdown
+        import signal
+        import sys
+
+        def signal_handler(sig, frame):
+            print("Signal received, shutting down...")
+            # Run the cleanup in the event loop
+            app.loop.create_task(cleanup_tasks())
+            # Wait a bit for tasks to clean up
+            import time
+            time.sleep(1)
+            sys.exit(0)
+
+        signal.signal(signal.SIGINT, signal_handler)
+        signal.signal(signal.SIGTERM, signal_handler)
+
+        # Run the bot
+        app.run()
+    except KeyboardInterrupt:
+        print("Keyboard interrupt received, shutting down...")
+        # We can't run the cleanup task directly here since the event loop is already stopped
+        print("Bot stopped")
