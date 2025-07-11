@@ -29,12 +29,14 @@ import Navbar from './components/auth/Navbar';
 import Footer from './components/public/Footer';
 import AnalyticsPage from './pages/gov/analytics';
 import Documentation from './pages/public/Documentation';
+import AccessibilityWidget from './components/public/AccessibilityWidget';
 
 function App() {
   
   return (
     <>
-    <Navbar />
+      <AccessibilityWidget />
+      <Navbar />
 <Routes>
      {/* Public Routes */}
       <Route path="/public/" element={

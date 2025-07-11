@@ -119,24 +119,18 @@ This MCP server provides location-aware disaster response capabilities. This ser
 
 ### 1. Clone the Repository
 ```bash
-cd MCP Server
+cd mcp-Server
 
 # Create a virtual environment (only first time)
-python -m venv .venv
-
-# Activate virtual environment
-# On Windows:
-.venv\Scripts\activate
-# On macOS/Linux:
-source .venv/bin/activate
+uv venv
 
 # Install dependencies
-uv pip install -r requirements.txt
+uv pip install
 ```
 
 ### 2. Run the MCP Server
 ```bash
-mcp install server.py
+uv run mcp install server.py
 ```
 
 ## Telegram Bot

@@ -10,3 +10,36 @@
 .leaflet-control {
   z-index: 1 !important;
 }
+
+/* Accessibility font size classes */
+.accessibility-text-size-1 { font-size: 1.02rem !important; line-height: 1.25 !important; }
+.accessibility-text-size-2 { font-size: 1.04rem !important; line-height: 1.3 !important; }
+.accessibility-text-size-3 { font-size: 1.06rem !important; line-height: 1.35 !important; }
+.accessibility-text-size-4 { font-size: 1.08rem !important; line-height: 1.4 !important; }
+.accessibility-text-size-5 { font-size: 1.10rem !important; line-height: 1.45 !important; }
+.accessibility-text-size-6 { font-size: 1.12rem !important; line-height: 1.5 !important; }
+.accessibility-text-size-7 { font-size: 1.14rem !important; line-height: 1.55 !important; }
+
+/* Apply to body and all children */
+.accessibility-text-size-1, .accessibility-text-size-1 * { font-size: 1.02rem !important; line-height: 1.25 !important; }
+.accessibility-text-size-2, .accessibility-text-size-2 * { font-size: 1.04rem !important; line-height: 1.3 !important; }
+.accessibility-text-size-3, .accessibility-text-size-3 * { font-size: 1.06rem !important; line-height: 1.35 !important; }
+.accessibility-text-size-4, .accessibility-text-size-4 * { font-size: 1.08rem !important; line-height: 1.4 !important; }
+.accessibility-text-size-5, .accessibility-text-size-5 * { font-size: 1.10rem !important; line-height: 1.45 !important; }
+.accessibility-text-size-6, .accessibility-text-size-6 * { font-size: 1.12rem !important; line-height: 1.5 !important; }
+.accessibility-text-size-7, .accessibility-text-size-7 * { font-size: 1.14rem !important; line-height: 1.55 !important; }
+
+body.links-underline a {
+  text-decoration: underline !important;
+  text-underline-offset: 2px !important;
+  text-decoration-thickness: 2px !important;
+}
+
+body.font-sans, body.font-sans * {
+  font-family: theme('fontFamily.sans'), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif !important;
+}
+
+body.reduce-motion *, body.reduce-motion *::before, body.reduce-motion *::after {
+  transition: none !important;
+  animation: none !important;
+}

@@ -2,7 +2,7 @@ from mcp.server.fastmcp import FastMCP
 import requests
 import time
 
-mcp = FastMCP("Beminithiya")
+mcp = FastMCP("Beminithiya Nearby disaster finding Tool")
 
 base_url = "http://localhost:8000"
 headers = {
