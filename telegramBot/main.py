@@ -167,14 +167,17 @@ async def handle_location(client, message):
             await loading_msg.edit_text(f"❌ Error: {nearby_data['error']}")
             return
         
-        if not nearby_data or len(nearby_data) == 0:
-            await loading_msg.edit_text("✅ Good news! No disasters reported in your area.")
+        # Filter only active disasters
+        active_disasters = [d for d in nearby_data if d.get("status", "").lower() == "active"]
+        
+        if not active_disasters:
+            await loading_msg.edit_text("✅ Good news! No active disasters reported in your area.")
             return
         
         # Format the response
-        response = "🚨 **Nearby Disasters:**\n\n"
+        response = "🚨 **Nearby Active Disasters:**\n\n"
         
-        for idx, disaster in enumerate(nearby_data, 1):
+        for idx, disaster in enumerate(active_disasters, 1):
             # Use the correct keys from the actual API response
             disaster_type = disaster.get("emergency_type", "Unknown")
             urgency = disaster.get("urgency_level", "Unknown")
@@ -182,7 +185,7 @@ async def handle_location(client, message):
             lat = disaster.get("latitude")
             lng = disaster.get("longitude")
             # situation = disaster.get("situation", "No details available")
-            status = disaster.get("status", "active")
+            status = disaster.get("status", "Unknown")
             
             response += f"**{idx}. {disaster_type.title()} - {urgency.title()} Urgency**\n"
             response += f"Status: {status.title()}\n"
