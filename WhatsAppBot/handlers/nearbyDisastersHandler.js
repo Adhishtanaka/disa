@@ -50,18 +50,28 @@ const handleNearbyDisasters = {
                 );
 
                 if (response.success) {
+                    // console.log("API Response:", JSON.stringify(response.data, null, 2));
+                    
+                    // Filter for only active disasters
+                    // Check if response.data is an array directly or nested inside an object
+                    const disastersArray = Array.isArray(response.data) ? response.data : 
+                                         (response.data && response.data.disasters ? response.data.disasters : []);
+                    const activeDisasters = disastersArray.filter(disaster => disaster.status === 'active');
+                    
+                    // console.log("Active disasters:", activeDisasters.length, JSON.stringify(activeDisasters, null, 2));
+                    
                     // Format nearby disasters data if available
-                    if (response.data && response.data.disasters && response.data.disasters.length > 0) {
-                        let disastersMessage = '🚨 *Nearby Disasters*\n\n';
+                    if (activeDisasters.length > 0) {
+                        let disastersMessage = '🚨 *Nearby Active Disasters*\n\n';
                         
-                        response.data.disasters.forEach((disaster, index) => {
-                            disastersMessage += `*${index + 1}. ${disaster.type || 'Disaster'}*\n`;
-                            disastersMessage += `• Status: ${disaster.status || 'Active'}\n`;
-                            if (disaster.distance) {
-                                disastersMessage += `• Distance: ${disaster.distance.toFixed(1)} km away\n`;
+                        activeDisasters.forEach((disaster, index) => {
+                            disastersMessage += `*${index + 1}. ${disaster.emergency_type || 'Disaster'}*\n`;
+                            disastersMessage += `• Urgency: ${disaster.urgency_level || 'Unknown'}\n`;
+                            if (disaster.latitude && disaster.longitude) {
+                                disastersMessage += `• Location: https://www.google.com/maps?q=${disaster.latitude},${disaster.longitude}\n`;
                             }
-                            if (disaster.description) {
-                                disastersMessage += `• Info: ${disaster.description}\n`;
+                            if (disaster.people_count) {
+                                disastersMessage += `• People affected: ${disaster.people_count}\n`;
                             }
                             disastersMessage += '\n';
                         });
@@ -71,8 +81,6 @@ const handleNearbyDisasters = {
                     } else {
                         msg.reply(formatMessage.success('Good news! No active disasters were found near your location.'));
                     }
-                } else {
-                    msg.reply(formatMessage.error(`Failed to check for nearby disasters: ${response.error}`));
                 }
                 userStates.delete(senderId); // Clear state after check
                 break;
